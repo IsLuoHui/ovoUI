@@ -446,16 +446,6 @@ void OLED_GShowMixString(u8 x, u8 y, char *String, u8 *RAM, u8 draw)
 }
 
 
-
-
-
-
-
-
-
-
-
-
 /*
 void OLED_ShowChar(u8 x, u8 y, u8 chr)
 {

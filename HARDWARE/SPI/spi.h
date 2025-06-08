@@ -78,10 +78,4 @@ void OLED_GShowCNString(u8 x, u8 y, char *String, u8 *RAM, u8 draw);
 void OLED_GShowBMP(u8 x, u8 y, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 void OLED_GShowMixString(u8 x, u8 y, char *String, u8 * RAM, u8 draw);
 
-
-void OLED_ShowChar(u8 x, u8 y, u8 chr);
-void OLED_ShowNum(u8 x,u8 y,u32 num,u8 len,u8 size);
-void OLED_ShowString(u8 x,u8 y, u8 *p);	 
-void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned char y1,unsigned char BMP[]);
-
 #endif

@@ -1,6 +1,10 @@
 #include "ec11.h"
+#include "spi.h"
 
 extern u8 ec11;
+extern u8 x, y;
+
+static u8 EC11_AL;
 
 void EC11_Init(void) {
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -19,20 +23,22 @@ void EC11_Init(void) {
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
 	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE );
-    
+
+    EC11_AL = EC11_A;   //避免初始化后触发一次
+
     NVIC_InitTypeDef NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;//抢占优先级1
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;; // 子优先级3
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-
+    
     TIM_Cmd(TIM4, ENABLE);
 }
 
 
 u8 EC11_Scan(void) {
-    static u8 EC11_AL;
+    
     static u8 ScanResult;
     static u16 DLTime;
 
@@ -66,7 +72,11 @@ void TIM4_IRQHandler(void)
 { 	
 	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//是更新中断
     {
-        ec11 = EC11_Scan();		
-		TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
+        ec11 = EC11_Scan();
+        if (ec11 & 0x04 && !(ec11 & 0x01))x++;
+        if (ec11 & 0x02 && !(ec11 & 0x01))x--;
+        if (ec11 & 0x04 && ec11 & 0x01)y++;
+        if (ec11 & 0x02 && ec11 & 0x01)y--;
+        TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
 	}
 }

@@ -2,6 +2,7 @@
 #include "delay.h"
 #include "spi.h"
 #include "ec11.h"
+#include "tim.h"
 
 #define LED_OFF (GPIOC->BSRR = GPIO_Pin_13) //H
 #define LED_ON (GPIOC->BRR = GPIO_Pin_13)	//L
@@ -16,7 +17,12 @@
 
 u8 OLEDRAM[OLED_SIZE];
 u8 ec11 = 0x00;
-//u8 r = 0;
+u8 x = 0, y = 0;
+
+u8 flushing = 0;
+u16 flushtime = 0;
+u16 lastf = 0;
+
 
 int main(void)
 {
@@ -31,15 +37,12 @@ int main(void)
 	OLED_SPI_GPIO_Init();
 	OLED_Init();
 	EC11_Init();
+	//TIM3_Init();
 
 	while (1)
 	{
-		// if (ec11 & 0x05)r++;
-		// if (ec11 & 0x03)r--;
-		// if (ec11 & 0x04 && !(ec11&0x01))r += 10;
-		// if (ec11 & 0x02 && !(ec11&0x01))r -= 10;
-
 		//OLED_GShowString(0, 2, "00000000", OLEDRAM, 1);
+		//flushing = 1;
 		if (ec11 & 0x80)OLED_GShowChar(0, 2, '1', OLEDRAM, 1);
 		if (ec11 & 0x40)OLED_GShowChar(8, 2, '1', OLEDRAM, 1);
 		if (ec11 & 0x20)OLED_GShowChar(16, 2, '1', OLEDRAM, 1);
@@ -48,11 +51,12 @@ int main(void)
 		if (ec11 & 0x04)OLED_GShowChar(40, 2, '1', OLEDRAM, 1);
 		if (ec11 & 0x02)OLED_GShowChar(48, 2, '1', OLEDRAM, 1);
 		if (ec11 & 0x01)OLED_GShowChar(56, 2, '1', OLEDRAM, 1);
-		//OLED_GShowNum(0, 2, kv, 8, OLEDRAM, 1);
-		//OLED_GShowNum(0, 4, k, 3, OLEDRAM, 1);
-		//OLED_GShowNum(0, 6, r, 3, OLEDRAM, 1);
+		OLED_GShowNum(0, 1, lastf, 5, OLEDRAM, 1);
+		OLED_GShowNum(0, 4, x, 3, OLEDRAM, 1);
+		OLED_GShowNum(0, 6, y, 3, OLEDRAM, 1);
 		OLED_Refresh_RAM(OLEDRAM);
-		delay_ms(10);
+		//flushing = 0;
+		delay_ms(1);
 		OLED_Clear_RAM(OLEDRAM);
 	}
 	
