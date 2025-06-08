@@ -1,0 +1,292 @@
+{
+  "name": "ovoUI",
+  "type": "ARM",
+  "dependenceList": [],
+  "srcDirs": [],
+  "virtualFolder": {
+    "name": "<virtual_root>",
+    "files": [],
+    "folders": [
+      {
+        "name": "USER",
+        "files": [
+          {
+            "path": "USER/main.c"
+          },
+          {
+            "path": "USER/stm32f10x_it.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "FWLIB",
+        "files": [
+          {
+            "path": "FWLIB/src/misc.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_adc.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_bkp.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_can.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_cec.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_crc.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_dac.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_dbgmcu.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_dma.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_exti.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_flash.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_fsmc.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_gpio.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_i2c.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_iwdg.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_pwr.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_rcc.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_rtc.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_sdio.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_spi.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_tim.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_usart.c"
+          },
+          {
+            "path": "FWLIB/src/stm32f10x_wwdg.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "CORE",
+        "files": [
+          {
+            "path": "CORE/core_cm3.c"
+          },
+          {
+            "path": "CORE/startup_stm32f10x_md.s"
+          },
+          {
+            "path": "CORE/system_stm32f10x.c"
+          }
+        ],
+        "folders": []
+      },
+      {
+        "name": "HARDWARE",
+        "files": [],
+        "folders": [
+          {
+            "name": "SPI",
+            "files": [
+              {
+                "path": "HARDWARE/SPI/spi.c"
+              }
+            ],
+            "folders": []
+          },
+          {
+            "name": "ovoUI",
+            "files": [],
+            "folders": []
+          },
+          {
+            "name": "delay",
+            "files": [
+              {
+                "path": "HARDWARE/delay/delay.c"
+              }
+            ],
+            "folders": []
+          },
+          {
+            "name": "ec11",
+            "files": [
+              {
+                "path": "HARDWARE/ec11/ec11.c"
+              }
+            ],
+            "folders": []
+          }
+        ]
+      }
+    ]
+  },
+  "outDir": "BUILDUP",
+  "deviceName": "STM32F103C8",
+  "packDir": ".pack/Keil/STM32F1xx_DFP.2.4.1",
+  "miscInfo": {
+    "uid": "868643a5791c705107b32ad281cbdf18"
+  },
+  "targets": {
+    "Debug": {
+      "excludeList": [
+        "CORE/system_stm32f10x.c",
+        "CORE/core_cm3.c",
+        "CORE/startup_stm32f10x_md.s",
+        "<virtual_root>/HARDWARE/ovoUI/oled.c"
+      ],
+      "toolchain": "AC5",
+      "compileConfig": {
+        "cpuType": "Cortex-M3",
+        "floatingPointHardware": "none",
+        "useCustomScatterFile": false,
+        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
+        "storageLayout": {
+          "RAM": [
+            {
+              "tag": "IRAM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x20000000",
+                "size": "0x5000"
+              },
+              "isChecked": true,
+              "noInit": false
+            }
+          ],
+          "ROM": [
+            {
+              "tag": "IROM",
+              "id": 1,
+              "mem": {
+                "startAddr": "0x08000000",
+                "size": "0x10000"
+              },
+              "isChecked": true,
+              "isStartup": true
+            }
+          ]
+        },
+        "options": "null"
+      },
+      "uploader": "OpenOCD",
+      "uploadConfig": {
+        "bin": "",
+        "target": "stm32f1x",
+        "interface": "cmsis-dap",
+        "baseAddr": "0x08000000"
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "",
+          "cpuInfo": {
+            "vendor": "null",
+            "cpuName": "null"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          ".",
+          "USER",
+          "FWLIB/inc",
+          "CORE",
+          "HARDWARE/delay",
+          "HARDWARE/SPI",
+          "HARDWARE/ovoUI",
+          "HARDWARE/ec11"
+        ],
+        "libList": [],
+        "defineList": [
+          "STM32F10X_MD",
+          "USE_STDPERIPH_DRIVER"
+        ]
+      },
+      "builderOptions": {
+        "GCC": {
+          "version": 5,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "$float-abi-type": "softfp",
+            "output-debug-info": "enable",
+            "misc-control": "--specs=nosys.specs --specs=nano.specs"
+          },
+          "c/cpp-compiler": {
+            "language-c": "c11",
+            "language-cpp": "c++11",
+            "optimization": "level-debug",
+            "warnings": "all-warnings",
+            "one-elf-section-per-function": true,
+            "one-elf-section-per-data": true,
+            "C_FLAGS": "",
+            "CXX_FLAGS": ""
+          },
+          "asm-compiler": {
+            "ASM_FLAGS": ""
+          },
+          "linker": {
+            "output-format": "elf",
+            "remove-unused-input-sections": true,
+            "LD_FLAGS": "",
+            "LIB_FLAGS": "-lm"
+          }
+        },
+        "AC5": {
+          "version": 4,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "use-microLIB": false,
+            "output-debug-info": "enable"
+          },
+          "c/cpp-compiler": {
+            "optimization": "level-0",
+            "one-elf-section-per-function": true,
+            "c99-mode": true,
+            "C_FLAGS": "--diag_suppress=1 --diag_suppress=1295",
+            "CXX_FLAGS": "--diag_suppress=1 --diag_suppress=1295"
+          },
+          "asm-compiler": {},
+          "linker": {
+            "output-format": "elf"
+          }
+        }
+      }
+    }
+  },
+  "version": "3.5"
+}
