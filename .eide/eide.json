@@ -127,6 +127,9 @@
             "files": [
               {
                 "path": "HARDWARE/ovoUI/tim.c"
+              },
+              {
+                "path": "HARDWARE/ovoUI/oled.c"
               }
             ],
             "folders": []
@@ -164,8 +167,7 @@
       "excludeList": [
         "CORE/system_stm32f10x.c",
         "CORE/core_cm3.c",
-        "CORE/startup_stm32f10x_md.s",
-        "<virtual_root>/HARDWARE/ovoUI/oled.c"
+        "CORE/startup_stm32f10x_md.s"
       ],
       "toolchain": "AC5",
       "compileConfig": {

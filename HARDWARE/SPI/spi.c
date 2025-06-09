@@ -1,72 +1,68 @@
 #include "spi.h"
 #include "stdlib.h"
-#include "font.h"
+#include "string.h"
 #include "delay.h"
+#include "font.h"
 
 static u16 RAMCursor;
 
 void OLED_SPI_GPIO_Init(void) {
     RCC->APB2ENR |= OLED_SPI_CLK_PIN_RCC | OLED_SPI_DIN_PIN_RCC | OLED_SPI_RES_PIN_RCC | OLED_SPI_DC_PIN_RCC | OLED_SPI_CS_PIN_RCC;
 
-    //SPI CLK
-    if (OLED_SPI_CLK_PIN_ID < 8) {
-        OLED_SPI_CLK_GPIO->CRL &= ~(0xF << (4 * OLED_SPI_CLK_PIN_ID));  // 4位清0
-        OLED_SPI_CLK_GPIO->CRL |= (0x3 << (4 * OLED_SPI_CLK_PIN_ID));   // MODE6=11(50MHz)
-        OLED_SPI_CLK_GPIO->CRL &= ~(0xC << (4 * OLED_SPI_CLK_PIN_ID));  // CNF6=00(推挽输出)
-    }
-    else {
-        OLED_SPI_CLK_GPIO->CRH &= ~(0xF << (4 * (OLED_SPI_CLK_PIN_ID - 8)));
-        OLED_SPI_CLK_GPIO->CRH |= (0x3 << (4 * (OLED_SPI_CLK_PIN_ID - 8)));
-        OLED_SPI_CLK_GPIO->CRH &= ~(0xC << (4 * (OLED_SPI_CLK_PIN_ID - 8)));
-    }
+//SPI CLK
+#if OLED_SPI_CLK_PIN_ID < 8
+    OLED_SPI_CLK_GPIO->CRL &= ~((u32)0xF << (4 * OLED_SPI_CLK_PIN_ID));  // 4位清0
+    OLED_SPI_CLK_GPIO->CRL |=  ((u32)0x3 << (4 * OLED_SPI_CLK_PIN_ID));   // MODE6=11(50MHz)
+    OLED_SPI_CLK_GPIO->CRL &= ~((u32)0xC << (4 * OLED_SPI_CLK_PIN_ID));  // CNF6=00(推挽输出)
+#else 
+    OLED_SPI_CLK_GPIO->CRH &= ~((u32)0xF << (4 * (OLED_SPI_CLK_PIN_ID - 8)));
+    OLED_SPI_CLK_GPIO->CRH |=  ((u32)0x3 << (4 * (OLED_SPI_CLK_PIN_ID - 8)));
+    OLED_SPI_CLK_GPIO->CRH &= ~((u32)0xC << (4 * (OLED_SPI_CLK_PIN_ID - 8)));
+#endif
 
-    //SPI DATA
-    if (OLED_SPI_DIN_PIN_ID < 8) {
-        OLED_SPI_DIN_GPIO->CRL &= ~(0xF << (4 * OLED_SPI_DIN_PIN_ID));
-        OLED_SPI_DIN_GPIO->CRL |= (0x3 << (4 * OLED_SPI_DIN_PIN_ID));
-        OLED_SPI_DIN_GPIO->CRL &= ~(0xC << (4 * OLED_SPI_DIN_PIN_ID));
-    }
-    else {
-        OLED_SPI_DIN_GPIO->CRH &= ~(0xF << (4 * (OLED_SPI_DIN_PIN_ID - 8)));
-        OLED_SPI_DIN_GPIO->CRH |= (0x3 << (4 * (OLED_SPI_DIN_PIN_ID - 8)));
-        OLED_SPI_DIN_GPIO->CRH &= ~(0xC << (4 * (OLED_SPI_DIN_PIN_ID - 8)));
-    }
+//SPI DATA
+#if OLED_SPI_DIN_PIN_ID < 8
+    OLED_SPI_DIN_GPIO->CRL &= ~((u32)0xF << (4 * OLED_SPI_DIN_PIN_ID));
+    OLED_SPI_DIN_GPIO->CRL |=  ((u32)0x3 << (4 * OLED_SPI_DIN_PIN_ID));
+    OLED_SPI_DIN_GPIO->CRL &= ~((u32)0xC << (4 * OLED_SPI_DIN_PIN_ID));
+#else 
+    OLED_SPI_DIN_GPIO->CRH &= ~((u32)0xF << (4 * (OLED_SPI_DIN_PIN_ID - 8)));
+    OLED_SPI_DIN_GPIO->CRH |=  ((u32)0x3 << (4 * (OLED_SPI_DIN_PIN_ID - 8)));
+    OLED_SPI_DIN_GPIO->CRH &= ~((u32)0xC << (4 * (OLED_SPI_DIN_PIN_ID - 8)));
+#endif
 
-    //SPI CS
-    if (OLED_SPI_CS_PIN_ID < 8) {
-        OLED_SPI_CS_GPIO->CRL &= ~(0xF << (4 * OLED_SPI_CS_PIN_ID));
-        OLED_SPI_CS_GPIO->CRL |= (0x3 << (4 * OLED_SPI_CS_PIN_ID));
-        OLED_SPI_CS_GPIO->CRL &= ~(0xC << (4 * OLED_SPI_CS_PIN_ID));
-    }
-    else {
-        OLED_SPI_CS_GPIO->CRH &= ~(0xF << (4 * (OLED_SPI_CS_PIN_ID - 8)));
-        OLED_SPI_CS_GPIO->CRH |= (0x3 << (4 * (OLED_SPI_CS_PIN_ID - 8)));
-        OLED_SPI_CS_GPIO->CRH &= ~(0xC << (4 * (OLED_SPI_CS_PIN_ID - 8)));
-    }
+//SPI CS
+#if OLED_SPI_CS_PIN_ID < 8
+    OLED_SPI_CS_GPIO->CRL &= ~((u32)0xF << (4 * OLED_SPI_CS_PIN_ID));
+    OLED_SPI_CS_GPIO->CRL |=  ((u32)0x3 << (4 * OLED_SPI_CS_PIN_ID));
+    OLED_SPI_CS_GPIO->CRL &= ~((u32)0xC << (4 * OLED_SPI_CS_PIN_ID));
+#else 
+    OLED_SPI_CS_GPIO->CRH &= ~((u32)0xF << (4 * (OLED_SPI_CS_PIN_ID - 8)));
+    OLED_SPI_CS_GPIO->CRH |=  ((u32)0x3 << (4 * (OLED_SPI_CS_PIN_ID - 8)));
+    OLED_SPI_CS_GPIO->CRH &= ~((u32)0xC << (4 * (OLED_SPI_CS_PIN_ID - 8)));
+#endif
 
-    //SPI RST
-    if (OLED_SPI_RES_PIN_ID < 8) {
-        OLED_SPI_RES_GPIO->CRL &= ~(0xF << (4 * OLED_SPI_RES_PIN_ID));
-        OLED_SPI_RES_GPIO->CRL |= (0x3 << (4 * OLED_SPI_RES_PIN_ID));
-        OLED_SPI_RES_GPIO->CRL &= ~(0xC << (4 * OLED_SPI_RES_PIN_ID));
-    }
-    else {
-        OLED_SPI_RES_GPIO->CRH &= ~(0xF << (4 * (OLED_SPI_RES_PIN_ID - 8)));
-        OLED_SPI_RES_GPIO->CRH |= (0x3 << (4 * (OLED_SPI_RES_PIN_ID - 8)));
-        OLED_SPI_RES_GPIO->CRH &= ~(0xC << (4 * (OLED_SPI_RES_PIN_ID - 8)));
-    }
+//SPI RST
+#if OLED_SPI_RES_PIN_ID < 8
+    OLED_SPI_RES_GPIO->CRL &= ~((u32)0xF << (4 * OLED_SPI_RES_PIN_ID));
+    OLED_SPI_RES_GPIO->CRL |=  ((u32)0x3 << (4 * OLED_SPI_RES_PIN_ID));
+    OLED_SPI_RES_GPIO->CRL &= ~((u32)0xC << (4 * OLED_SPI_RES_PIN_ID));
+#else 
+    OLED_SPI_RES_GPIO->CRH &= ~((u32)0xF << (4 * (OLED_SPI_RES_PIN_ID - 8)));
+    OLED_SPI_RES_GPIO->CRH |=  ((u32)0x3 << (4 * (OLED_SPI_RES_PIN_ID - 8)));
+    OLED_SPI_RES_GPIO->CRH &= ~((u32)0xC << (4 * (OLED_SPI_RES_PIN_ID - 8)));
+#endif
 
-    //SPI DC
-    if (OLED_SPI_DC_PIN_ID < 8) {
-        OLED_SPI_DC_GPIO->CRL &= ~(0xF << (4 * OLED_SPI_DC_PIN_ID));
-        OLED_SPI_DC_GPIO->CRL |= (0x3 << (4 * OLED_SPI_DC_PIN_ID));
-        OLED_SPI_DC_GPIO->CRL &= ~(0xC << (4 * OLED_SPI_DC_PIN_ID));
-    }
-    else {
-        OLED_SPI_DC_GPIO->CRH &= ~(0xF << (4 * (OLED_SPI_DC_PIN_ID - 8)));
-        OLED_SPI_DC_GPIO->CRH |= (0x3 << (4 * (OLED_SPI_DC_PIN_ID - 8)));
-        OLED_SPI_DC_GPIO->CRH &= ~(0xC << (4 * (OLED_SPI_DC_PIN_ID - 8)));
-    }
+//SPI DC
+#if OLED_SPI_DC_PIN_ID < 8
+    OLED_SPI_DC_GPIO->CRL &= ~((u32)0xF << (4 * OLED_SPI_DC_PIN_ID));
+    OLED_SPI_DC_GPIO->CRL |=  ((u32)0x3 << (4 * OLED_SPI_DC_PIN_ID));
+    OLED_SPI_DC_GPIO->CRL &= ~((u32)0xC << (4 * OLED_SPI_DC_PIN_ID));
+#else
+    OLED_SPI_DC_GPIO->CRH &= ~((u32)0xF << (4 * (OLED_SPI_DC_PIN_ID - 8)));
+    OLED_SPI_DC_GPIO->CRH |=  ((u32)0x3 << (4 * (OLED_SPI_DC_PIN_ID - 8)));
+    OLED_SPI_DC_GPIO->CRH &= ~((u32)0xC << (4 * (OLED_SPI_DC_PIN_ID - 8)));
+#endif
 
     OLED_SPI_CLK_H;
     OLED_SPI_DIN_H;
@@ -110,7 +106,7 @@ void OLED_Init(void) {
     OLED_W_CMD(0xA6);// Disable Inverse Display On (0xa6/a7) 
     OLED_W_CMD(0xAF);//--turn on oled panel
 
-    OLED_Clear_Screen();
+    OLED_Screen_Clear();
     OLED_Set_Cursor(0, 0);
 }
 
@@ -164,7 +160,7 @@ void OLED_Set_Cursor(u8 x, u8 y) {
     OLED_W_CMD((x & 0x0f) | 0x01);
 }
 
-void OLED_Clear_Screen(void) {
+void OLED_Screen_Clear(void) {
     u8 x, y;
     for (y = 0;y < 8;y++)
     {
@@ -173,7 +169,7 @@ void OLED_Clear_Screen(void) {
     }
 }
 
-void OLED_Fill_Screen(void) {
+void OLED_Screen_Fill(void) {
     u8 x, y;
     for (y = 0;y < 8;y++)
     {
@@ -185,7 +181,7 @@ void OLED_Fill_Screen(void) {
 /**
  * RAM
  */
-void OLED_Refresh_RAM(u8 *RAM) {
+void OLED_RAM_Refresh(u8 *RAM) {
     u8 x, y;
     RAMCursor = 0;
     for (y = 0;y < 8;y++)
@@ -195,8 +191,8 @@ void OLED_Refresh_RAM(u8 *RAM) {
     }
 }
 
-void OLED_Clear_RAM(u8 *RAM) {
-    for(RAMCursor=0;RAMCursor<OLED_SIZE;RAMCursor++)RAM[RAMCursor]=0x00;
+void OLED_RAM_Clear(u8 *RAM) {
+    memset(RAM, 0, OLED_SIZE);
 }
 
 void OLED_Fill_RAM(u8 *RAM) {

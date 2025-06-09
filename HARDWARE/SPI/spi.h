@@ -10,8 +10,8 @@
 #define OLED_SPI_CLK_PIN_RCC RCC_APB2Periph_GPIOA
 //数据 D1
 #define OLED_SPI_DIN_GPIO GPIOA
-#define OLED_SPI_DIN_PIN GPIO_Pin_7
-#define OLED_SPI_DIN_PIN_ID 7
+#define OLED_SPI_DIN_PIN GPIO_Pin_6
+#define OLED_SPI_DIN_PIN_ID 6
 #define OLED_SPI_DIN_PIN_RCC RCC_APB2Periph_GPIOA
 //重置 RES
 #define OLED_SPI_RES_GPIO GPIOB
@@ -57,11 +57,12 @@ void OLED_W_DATA(u8 data);
 void OLED_Display_On(void);
 void OLED_Display_Off(void);
 void OLED_Set_Cursor(u8 x, u8 y);
-void OLED_Clear_Screen(void);
-void OLED_Fill_Screen(void);
+
+void OLED_Screen_Clear(void);
+void OLED_Screen_Fill(void);
 //RAM
-void OLED_Refresh_RAM(u8 *RAM);
-void OLED_Clear_RAM(u8 *RAM);
+void OLED_RAM_Refresh(u8 *RAM);
+void OLED_RAM_Clear(u8 *RAM);
 void OLED_Fill_RAM(u8 *RAM);
 void OLED_DrawPoint(u8 x, u8 y, u8 *RAM, u8 draw);
 void OLED_DrawLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw);
@@ -75,7 +76,8 @@ void OLED_GShowNum(u8 x, u8 y, u32 num, u8 len, u8 *RAM, u8 draw);
 void OLED_GShowHexNum(u8 x, u8 y, u32 num, u8 len, u8 *RAM, u8 draw);
 void OLED_GShowCN(u8 x, u8 y, u8 CC[], u8 *RAM, u8 draw);
 void OLED_GShowCNString(u8 x, u8 y, char *String, u8 *RAM, u8 draw);
-void OLED_GShowBMP(u8 x, u8 y, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 void OLED_GShowMixString(u8 x, u8 y, char *String, u8 * RAM, u8 draw);
+
+void OLED_GShowBMP(u8 x, u8 y, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 
 #endif
