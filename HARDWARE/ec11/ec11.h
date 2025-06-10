@@ -10,13 +10,27 @@
  *  反转 2
  *  按下 1
  */
+#define EC11_A_GPIO GPIOB
+#define EC11_A_PIN GPIO_Pin_9
+#define EC11_A_PIN_ID 9
+#define EC11_A_PIN_RCC RCC_APB2Periph_GPIOB
 
-#define EC11_A ((GPIOB->IDR & GPIO_Pin_9) != (uint32_t)Bit_RESET)
-#define EC11_B ((GPIOB->IDR & GPIO_Pin_8) != (uint32_t)Bit_RESET)
-#define EC11_K ((GPIOB->IDR & GPIO_Pin_7) != (uint32_t)Bit_RESET)
+#define EC11_B_GPIO GPIOB
+#define EC11_B_PIN GPIO_Pin_8
+#define EC11_B_PIN_ID 8
+#define EC11_B_PIN_RCC RCC_APB2Periph_GPIOB
+
+#define EC11_K_GPIO GPIOB
+#define EC11_K_PIN GPIO_Pin_7
+#define EC11_K_PIN_ID 7
+#define EC11_K_PIN_RCC RCC_APB2Periph_GPIOB
+
+#define EC11_A ((GPIOB->IDR & EC11_A_PIN) != (uint32_t)Bit_RESET)
+#define EC11_B ((GPIOB->IDR & EC11_B_PIN) != (uint32_t)Bit_RESET)
+#define EC11_K ((GPIOB->IDR & EC11_K_PIN) != (uint32_t)Bit_RESET)
 
 #define EC11_LONG_PRESS 500 //长按判定时间(ms)
-#define R_DIRECTION 0 //旋转方向
+#define R_DIRECTION 0 //旋转方向调整
 
 void EC11_Init(void);
 u8 EC11_Scan(void);

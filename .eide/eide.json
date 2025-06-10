@@ -114,10 +114,10 @@
         "files": [],
         "folders": [
           {
-            "name": "SPI",
+            "name": "BSP",
             "files": [
               {
-                "path": "HARDWARE/SPI/spi.c"
+                "path": "HARDWARE/BSP/spi.c"
               }
             ],
             "folders": []
@@ -234,7 +234,7 @@
           "FWLIB/inc",
           "CORE",
           "HARDWARE/delay",
-          "HARDWARE/SPI",
+          "HARDWARE/BSP",
           "HARDWARE/ovoUI",
           "HARDWARE/ec11"
         ],

@@ -8,13 +8,35 @@ static u8 EC11_AL;
 u8 OLEDSHOW = 1;
 
 void EC11_Init(void) {
-    GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-    GPIO_SetBits(GPIOB, GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9);
+    RCC->APB2ENR |= EC11_A_PIN_RCC | EC11_B_PIN_RCC | EC11_K_PIN_RCC;
+//EC11_A
+#if EC11_A_PIN_ID < 8
+    EC11_A_GPIO->CRL &= ~((u32)0xF << (4 * EC11_A_PIN_ID));  // 清零4位
+    EC11_A_GPIO->CRL |=  ((u32)0x8 << (4 * EC11_A_PIN_ID));  // CNF=10, MODE=00
+#else 
+    EC11_A_GPIO->CRH &= ~((u32)0xF << (4 * (EC11_A_PIN_ID - 8)));
+    EC11_A_GPIO->CRH |=  ((u32)0x8 << (4 * (EC11_A_PIN_ID - 8)));
+#endif
+//EC11_B
+#if EC11_B_PIN_ID < 8
+    EC11_B_GPIO->CRL &= ~((u32)0xF << (4 * EC11_B_PIN_ID));  // 清零4位
+    EC11_B_GPIO->CRL |=  ((u32)0x8 << (4 * EC11_B_PIN_ID));  // CNF=10, MODE=00
+#else 
+    EC11_B_GPIO->CRH &= ~((u32)0xF << (4 * (EC11_B_PIN_ID - 8)));
+    EC11_B_GPIO->CRH |=  ((u32)0x8 << (4 * (EC11_B_PIN_ID - 8)));
+#endif
+//EC11_K
+#if EC11_K_PIN_ID < 8
+    EC11_K_GPIO->CRL &= ~((u32)0xF << (4 * EC11_K_PIN_ID));  // 清零4位
+    EC11_K_GPIO->CRL |=  ((u32)0x8 << (4 * EC11_K_PIN_ID));  // CNF=10, MODE=00
+#else 
+    EC11_K_GPIO->CRH &= ~((u32)0xF << (4 * (EC11_K_PIN_ID - 8)));
+    EC11_K_GPIO->CRH |=  ((u32)0x8 << (4 * (EC11_K_PIN_ID - 8)));
+#endif
+
+    EC11_A_GPIO->BSRR = (1 << EC11_A_PIN_ID);
+    EC11_B_GPIO->BSRR = (1 << EC11_B_PIN_ID);
+    EC11_K_GPIO->BSRR = (1 << EC11_K_PIN_ID);
 
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);

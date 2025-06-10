@@ -9,8 +9,6 @@
 #define LED_OFF (GPIOC->BSRR = GPIO_Pin_13) //H
 #define LED_ON (GPIOC->BRR = GPIO_Pin_13)	//L
 
-u8 OLEDRAM[OLED_SIZE];
-extern u8 framebuffer[1024];
 u8 ec11 = 0x00;
 extern u8 OLEDSHOW;
 int16_t x = 40, y = 0;
@@ -26,8 +24,8 @@ int main(void)
 	LED_OFF;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	OLED_SPI_GPIO_Init();
-	OLED_Init();
-	EC11_Init();
+    OLED_Init();
+    EC11_Init();
 
     //u8 ic[] = {
 	//	0xff,0x81,0x81,0x81,0x81,0x81,0x81,0xff

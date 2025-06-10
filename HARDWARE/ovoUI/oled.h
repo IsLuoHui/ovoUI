@@ -2,9 +2,14 @@
 #define __OLED_H
 #include "stm32f10x.h"
 
-// *OLED 屏幕尺寸(Pixel)
-#define WIDTH 128
-#define HEIGHT 64
+// *OLED 屏幕尺寸
+#define OLED_WIDTH 128 //col byte
+#define OLED_HEIGHT_PAGE 8   //page
+
+#define OLED_HEIGHT_PIXEL (OLED_HEIGHT_PAGE*8) //page
+#define OLED_BUFFER_SIZE (OLED_WIDTH * OLED_HEIGHT_PAGE)
+
+
 #define MAX_ELEMENTS 20 // 最大元素数量
 
 // *ELEMENT 结构体
@@ -33,13 +38,6 @@ void OLED_ShowCN(u8 x, u8 page, u8 CC[], u8 *RAM, u8 draw);
 void OLED_ShowCNString(u8 x, u8 page, char *String, u8 *RAM, u8 draw);
 void OLED_ShowBMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 void OLED_ShowMixString(u8 x, u8 page, char *String, u8 * RAM, u8 draw);
-
-//宽高 W & H
-#define OLED_WIDTH 128  //byte
-#define OLED_HEIGHT 8   //page
-
-#define OLED_SIZE (OLED_WIDTH * OLED_HEIGHT)
-
 
 ELEMENT *OLED_Create_Element(int16_t x, int16_t y, u8 w, u8 h, u8 mix, u8 *data);
 void modifyElement(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, u8 *data, u8 mix);

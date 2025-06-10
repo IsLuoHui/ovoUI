@@ -6,8 +6,7 @@
 
 
 // **全局 OLED 显示缓冲区**
-u8 FrameBuffer[1024] = {0};
-
+u8 FrameBuffer[OLED_BUFFER_SIZE] = {0};
 static u16 RAMCursor;
 
 ELEMENT *elementPtrs[MAX_ELEMENTS] = {0}; // 存储动态创建的 ELEMENT 指针
@@ -20,20 +19,22 @@ void OLED_RAM_Refresh(u8 *RAM) {
     for (y = 0;y < 8;y++)
     {
         OLED_Set_Cursor(0, y);
-        for (x = 0;x < 128;x++)OLED_W_DATA(RAM[RAMCursor++]);
+        for (x = 0;x < 128;x++) {
+            OLED_W_DATA(RAM[RAMCursor++]);
+        }
     }
 }
 
 void OLED_RAM_Clear(u8 *RAM) {
-    memset(RAM, 0, OLED_SIZE);
+    memset(RAM, 0, OLED_BUFFER_SIZE);
 }
 
 void OLED_Fill_RAM(u8 *RAM) {
-    for(RAMCursor=0;RAMCursor<OLED_SIZE;RAMCursor++)RAM[RAMCursor]=0xFF;
+    for(RAMCursor=0;RAMCursor<OLED_BUFFER_SIZE;RAMCursor++)RAM[RAMCursor]=0xFF;
 }
 
 void OLED_DrawPoint(u8 x, u8 y, u8 *RAM, u8 draw) {
-    if (x > OLED_WIDTH - 1 || y > OLED_HEIGHT * 8 - 1)return;
+    if (x > OLED_WIDTH - 1 || y > OLED_HEIGHT_PAGE * 8 - 1)return;
     switch(draw){
         case 0:
             RAM[y/8*128+x]&=~(0x01<<(y%8));
@@ -283,8 +284,8 @@ ELEMENT *OLED_Create_Element(int16_t x, int16_t y, u8 w, u8 h,u8 mix, u8 *data) 
 
     ele->x = x;
     ele->y = y;
-    ele->w = (x + w > WIDTH) ? WIDTH - x : w;
-    ele->h = (y + h > HEIGHT) ? HEIGHT - y : h;
+    ele->w = (x + w > OLED_WIDTH) ? OLED_WIDTH - x : w;
+    ele->h = (y + h > OLED_HEIGHT_PIXEL) ? OLED_HEIGHT_PIXEL - y : h;
     ele->mix = mix;
     ele->data = data;
 
@@ -297,8 +298,8 @@ void modifyElement(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, u8 *data, u8 
     if (!ele) return;
     ele->x = x;
     ele->y = y;
-    //ele->w = (x + w > WIDTH) ? WIDTH - x : w;
-    //ele->h = (y + h > HEIGHT) ? HEIGHT - y : h;
+    //ele->w = (x + w > OLED_WIDTH) ? OLED_WIDTH - x : w;
+    //ele->h = (y + h > OLED_HEIGHT_PIXEL) ? OLED_HEIGHT_PIXEL - y : h;
     //ele->data = data;
     //ele->mix = mix;
 }
@@ -321,10 +322,10 @@ void OLED_Mix_Print() {
         if (!e) continue;
 
         // 边界保护
-        if (e->x >= WIDTH || e->y >= HEIGHT || e->x + e->w <= 0 || e->y + e->h <= 0) continue;
+        if (e->x >= OLED_WIDTH || e->y >= OLED_HEIGHT_PIXEL || e->x + e->w <= 0 || e->y + e->h <= 0) continue;
 
         int16_t x0 = e->x < 0 ? 0 : e->x;
-        int16_t x1 = (e->x + e->w > WIDTH) ? WIDTH : (e->x + e->w);
+        int16_t x1 = (e->x + e->w > OLED_WIDTH) ? OLED_WIDTH : (e->x + e->w);
 
         int16_t page_start;
         u8 y_offset;
@@ -358,8 +359,8 @@ void OLED_Mix_Print() {
                 prev = data;
 
                 int16_t fb_page = page_start + page;
-                if (col >= 0 && col < WIDTH && fb_page >= 0 && fb_page < HEIGHT / 8)
-                    FrameBuffer[fb_page * WIDTH + col] = out;
+                if (col >= 0 && col < OLED_WIDTH && fb_page >= 0 && fb_page < OLED_HEIGHT_PIXEL / 8)
+                    FrameBuffer[fb_page * OLED_WIDTH + col] = out;
             }
         }
 
