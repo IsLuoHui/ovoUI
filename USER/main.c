@@ -2,7 +2,6 @@
 #include "delay.h"
 #include "spi.h"
 #include "ec11.h"
-#include "tim.h"
 #include "oled.h"
 
 //图标 垂直扫描，从左到右，从上到下，高位在前
@@ -54,24 +53,11 @@ const unsigned char ICON_48X48[][288] =
 #define LED_OFF (GPIOC->BSRR = GPIO_Pin_13) //H
 #define LED_ON (GPIOC->BRR = GPIO_Pin_13)	//L
 
-//              GND    电源地
-//              VCC  接5V或3.3v电源
-//              D0   接PA5（SCL）
-//              D1   接PA7（SDA）
-//              RES  接PB0
-//              DC   接PB1
-//              CS   接PA4 
-
 u8 OLEDRAM[OLED_SIZE];
 extern u8 framebuffer[1024];
 u8 ec11 = 0x00;
 extern u8 OLEDSHOW;
-u8 x = 0, y = 0;
-
-u8 flushing = 0;
-u16 flushtime = 0;
-u16 lastf = 0;
-
+int16_t x = 100, y = 0;
 
 int main(void)
 {
@@ -86,24 +72,19 @@ int main(void)
 	OLED_SPI_GPIO_Init();
 	OLED_Init();
 	EC11_Init();
-	//TIM3_Init();
-	
-	Node *elementList = (void *)0; // 创建链表
-	//u8 ic[] = {
-	//	0xff,0x81,0x81,0x81,0x81,0x81,0x81,0xff
-	//};
-	
-	ELEMENT icon1 = OLED_Create_Element(80, 5, 48, 48, 0x00,(u8 *)ICON_48X48[0]);
-	//ELEMENT icon2 = OLED_Create_Element(5, 5, 8, 8, 0x00,ic);
-	addElement(&elementList, icon1);
-	//addElement(&elementList, icon2);
+
+    u8 ic[] = {
+		0xff,0x81,0x81,0x81,0x81,0x81,0x81,0xff
+	};
+	//ELEMENT *icon1 = OLED_Create_Element(80, 5, 48, 48, 0x00,(u8 *)ICON_48X48[0]);
+	ELEMENT *icon1 = OLED_Create_Element(110, 5, 8, 8, 0x00,ic);
 	while (1)
 	{
         if (OLEDSHOW)OLED_Display_On();
         else OLED_Display_Off();
 
-        modifyElementByData(elementList, icon1.data, x, y);
-        printElements(elementList); // 重新显示
+        modifyElement(icon1, x, y, 0, 0, (void*)0, 0);
+        OLED_Mix_Print();
         delay_ms(10);
     }
 	

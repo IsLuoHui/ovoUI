@@ -1,9 +1,5 @@
 #include "tim.h"
 
-extern u8 flushing;
-extern u16 flushtime;
-extern u16 lastf;
-
 
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -27,11 +23,6 @@ void TIM3_IRQHandler(void)
 { 	
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)//是更新中断
     {
-        if (flushing)flushtime++;
-        else {
-            lastf = flushtime;
-            flushtime = 0;
-        }
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);  //清除TIM4更新中断标志    
 	}
 }

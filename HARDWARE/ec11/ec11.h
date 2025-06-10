@@ -16,9 +16,9 @@
 #define EC11_K ((GPIOB->IDR & GPIO_Pin_7) != (uint32_t)Bit_RESET)
 
 #define EC11_LONG_PRESS 500 //长按判定时间(ms)
-#define R_DIRECTION 1 //旋转方向
+#define R_DIRECTION 0 //旋转方向
 
 void EC11_Init(void);
 u8 EC11_Scan(void);
 
-#endif
+#endif 

@@ -2,10 +2,10 @@
 #include "spi.h"
 
 extern u8 ec11;
-extern u8 x, y;
+extern int16_t x, y;
 
 static u8 EC11_AL;
-u8 OLEDSHOW = 0xff;
+u8 OLEDSHOW = 1;
 
 void EC11_Init(void) {
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -74,11 +74,23 @@ void TIM4_IRQHandler(void)
 	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//是更新中断
     {
         ec11 = EC11_Scan();
-        if (ec11 & 0x04 && !(ec11 & 0x01))x++;
-        if (ec11 & 0x02 && !(ec11 & 0x01))x--;
-        if (ec11 & 0x04 && ec11 & 0x01)y++;
-        if (ec11 & 0x02 && ec11 & 0x01)y--;
-        if (ec11 & 0x01)OLEDSHOW=~OLEDSHOW;
+        if (ec11 & 0x04 && !(ec11 & 0x01)) {
+            x++;
+            OLEDSHOW = 1;
+        }
+        if (ec11 & 0x02 && !(ec11 & 0x01)) {
+            x--;
+            OLEDSHOW = 1;
+        }
+        if (ec11 & 0x04 && ec11 & 0x01) {
+            y++;
+            OLEDSHOW = 1;
+        }
+        if (ec11 & 0x02 && ec11 & 0x01) {
+            y--;
+            OLEDSHOW = 1;
+        }
+        if (!(ec11 & 0x06) && ec11 & 0x01)OLEDSHOW = 0;
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
 	}
 }

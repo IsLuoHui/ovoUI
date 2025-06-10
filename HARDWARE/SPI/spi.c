@@ -157,7 +157,7 @@ void OLED_Display_Off(void) {
 void OLED_Set_Cursor(u8 x, u8 y) {
     OLED_W_CMD(0xb0 + y);
     OLED_W_CMD(((x & 0xf0) >> 4) | 0x10);
-    OLED_W_CMD((x & 0x0f) | 0x01);
+    OLED_W_CMD(x & 0x0f);
 }
 
 void OLED_Screen_Clear(void) {
