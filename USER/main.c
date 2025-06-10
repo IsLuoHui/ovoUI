@@ -57,7 +57,7 @@ u8 OLEDRAM[OLED_SIZE];
 extern u8 framebuffer[1024];
 u8 ec11 = 0x00;
 extern u8 OLEDSHOW;
-int16_t x = 100, y = 0;
+int16_t x = 40, y = 0;
 
 int main(void)
 {
@@ -73,11 +73,11 @@ int main(void)
 	OLED_Init();
 	EC11_Init();
 
-    u8 ic[] = {
-		0xff,0x81,0x81,0x81,0x81,0x81,0x81,0xff
-	};
-	//ELEMENT *icon1 = OLED_Create_Element(80, 5, 48, 48, 0x00,(u8 *)ICON_48X48[0]);
-	ELEMENT *icon1 = OLED_Create_Element(110, 5, 8, 8, 0x00,ic);
+    //u8 ic[] = {
+	//	0xff,0x81,0x81,0x81,0x81,0x81,0x81,0xff
+	//};
+	//ELEMENT *icon1 = OLED_Create_Element(110, 5, 8, 8, 0x00,ic);
+	ELEMENT *icon1 = OLED_Create_Element(80, 5, 48, 48, 0x00,(u8 *)ICON_48X48[0]);
 	while (1)
 	{
         if (OLEDSHOW)OLED_Display_On();

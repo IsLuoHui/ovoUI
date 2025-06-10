@@ -61,46 +61,75 @@ void OLED_Mix_Print() {
         ELEMENT *e = elementPtrs[n];
         if (!e) continue;
 
-        //u8 offset_pix = e.y % 8;
-        //u8 offset_row = e->y / 8;
-        u16 all_row = e->h % 8 == 0 ? e->h / 8 : e->h / 8 + 1;
+        // 边界保护
+        if (e->x >= WIDTH || e->y >= HEIGHT || e->x + e->w <= 0 || e->y + e->h <= 0) continue;
 
-        if (e->w == 0)continue; //没有宽度
-        if (e->x >= WIDTH)continue;  //x大于右边界情况
-        if (e->x + e->w < 0)continue; //x+w小于左边界情况
-        if (e->x >= 0 && e->x + e->w <= WIDTH) {  //范围内情况
-            for (u8 trow = 0;trow < all_row;trow++) {
-                for (u8 tcol = 0;tcol < e->w;tcol++) {
-                    framebuffer[trow * WIDTH + e->x + tcol] = e->data[trow * e->w + tcol];
-                }
-            }
-            OLED_GShowChar(32, 6, '*', framebuffer, 1);
-        }
-        else if (e->x >= 0 && e->x + e->w > WIDTH) {  //右侧超出部分情况
-            u8 draw_w = WIDTH - e->x; // 实际可显示的宽度
-            if (draw_w > e->w) draw_w = e->w;
-            for (u8 trow = 0; trow < all_row; trow++) {
-                for (u8 tcol = 0; tcol < draw_w; tcol++) {
-                    framebuffer[trow * WIDTH + e->x + tcol] = e->data[trow * e->w + tcol];
-                }
-            }
-            OLED_GShowChar(32, 6, '+', framebuffer, 1);
-        }
-        else if (e->x < 0 && e->x + e->w > 0) {  //左侧超出部分情况
-            for (u8 trow = 0; trow < all_row; trow++) {
-                for (u8 tcol = 0; tcol < e->w+e->x; tcol++) {
-                    framebuffer[trow * WIDTH + tcol] = e->data[trow * e->w -e->x + tcol];
-                }
-            }
-            OLED_GShowChar(32, 6, '-', framebuffer, 1);
+        int16_t x0 = e->x < 0 ? 0 : e->x;
+        int16_t x1 = (e->x + e->w > WIDTH) ? WIDTH : (e->x + e->w);
+
+        int16_t page_start;
+        u8 y_offset;
+        if (e->y >= 0) {
+            page_start = e->y / 8;
+            y_offset = e->y % 8;
+        } else {
+            int16_t abs_y = -e->y;
+            page_start = (e->y - 7) / 8; // 向下取整
+            y_offset = (8 - (abs_y % 8)) % 8;
         }
 
-        int16_t pr=e->x;
-        if (pr < 0) {
-            pr = -pr;
+        // 计算需要显示的页数，确保像素全部显示
+        u8 page_cnt = (e->h + y_offset + 7) / 8;
+
+        for (int16_t col = x0; col < x1; col++) {
+            int16_t data_col = col - e->x;
+            u8 prev = 0;
+            for (u8 page = 0; page < page_cnt; page++) {
+                u8 data = 0;
+                int16_t data_idx = page * e->w + data_col;
+                if (data_col >= 0 && data_col < e->w && data_idx < e->w * ((e->h + 7) / 8))
+                    data = e->data[data_idx];
+
+                u8 out;
+                if (page == 0) {
+                    out = data << y_offset;
+                } else {
+                    out = (data << y_offset) | (prev >> (8 - y_offset));
+                }
+                prev = data;
+
+                int16_t fb_page = page_start + page;
+                if (col >= 0 && col < WIDTH && fb_page >= 0 && fb_page < HEIGHT / 8)
+                    framebuffer[fb_page * WIDTH + col] = out;
+            }
+        }
+
+        int16_t px = e->x;
+        int16_t py = e->y;
+        if (px < 0) {
+            px = -px;
             OLED_GShowChar(0, 6, '-', framebuffer, 1);
         }
-        OLED_GShowNum(8, 6, pr, 3, framebuffer, 1);
+        if (py < 0) {
+            py = -py;
+            OLED_GShowChar(0, 4, '-', framebuffer, 1);
+        }
+        OLED_GShowNum(8, 4, py, 3, framebuffer, 1);
+        OLED_GShowNum(8, 6, px, 3, framebuffer, 1);
     }
     OLED_RAM_Refresh(framebuffer);
 }
+ /*
+        int16_t px = e->x;
+        int16_t py = e->y;
+        if (px < 0) {
+            px = -px;
+            OLED_GShowChar(0, 6, '-', framebuffer, 1);
+        }
+        if (py < 0) {
+            py = -py;
+            OLED_GShowChar(0, 4, '-', framebuffer, 1);
+        }
+        OLED_GShowNum(8, 4, py, 3, framebuffer, 1);
+        OLED_GShowNum(8, 6, px, 3, framebuffer, 1);
+        */

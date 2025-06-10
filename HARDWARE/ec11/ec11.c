@@ -90,7 +90,7 @@ void TIM4_IRQHandler(void)
             y--;
             OLEDSHOW = 1;
         }
-        if (!(ec11 & 0x06) && ec11 & 0x01)OLEDSHOW = 0;
+        //if (!(ec11 & 0x06) && ec11 & 0x01)OLEDSHOW = 0;
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
 	}
 }
