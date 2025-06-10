@@ -4,7 +4,7 @@
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-    TIM_TimeBaseStructure.TIM_Period = 99;//arr 自动重装载
+    TIM_TimeBaseStructure.TIM_Period = 999;//arr 自动重装载
     TIM_TimeBaseStructure.TIM_Prescaler = 71;//psc 预分频
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;

@@ -29,11 +29,11 @@ void OLED_RAM_Clear(u8 *RAM) {
     memset(RAM, 0, OLED_BUFFER_SIZE);
 }
 
-void OLED_Fill_RAM(u8 *RAM) {
+void OLED_RAM_Fill(u8 *RAM) {
     for(RAMCursor=0;RAMCursor<OLED_BUFFER_SIZE;RAMCursor++)RAM[RAMCursor]=0xFF;
 }
 
-void OLED_DrawPoint(u8 x, u8 y, u8 *RAM, u8 draw) {
+void OLED_Draw_Point(u8 x, u8 y, u8 *RAM, u8 draw) {
     if (x > OLED_WIDTH - 1 || y > OLED_HEIGHT_PAGE * 8 - 1)return;
     switch(draw){
         case 0:
@@ -49,12 +49,12 @@ void OLED_DrawPoint(u8 x, u8 y, u8 *RAM, u8 draw) {
     }
 }
 
-void OLED_DrawLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
+void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
     u8 dx =abs(x1-x0), dy =abs(y1-y0);
     char sx =x0<x1?1:-1, sy =y0<y1?1:-1; 
     short err =(dx>dy?dx:-dy)/2, e2;
     while(1){
-        OLED_DrawPoint(x0, y0, RAM, draw);
+        OLED_Draw_Point(x0, y0, RAM, draw);
         if(x0==x1&&y0==y1) break;
         e2=err;
         if(e2>-dx){
@@ -68,7 +68,7 @@ void OLED_DrawLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
     }
 }
 
-void OLED_DrawDashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 draw) {
+void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 draw) {
     u8 dx = abs(x1 - x0), dy = abs(y1 - y0);
     int8_t sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;;
     int16_t err = (dx > dy ? dx : -dy) / 2, e2;
@@ -76,7 +76,7 @@ void OLED_DrawDashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 dra
     
     while(1){
         //间隔与线端等长
-        if(count<dashlen)OLED_DrawPoint(x0, y0, RAM, draw);
+        if(count<dashlen)OLED_Draw_Point(x0, y0, RAM, draw);
         count =(count+1)%(2*dashlen);
         //间隔画点
         //if(count%dashlen==0)OLED_DrawPoint(x0, y0, RAM, draw);
@@ -95,20 +95,20 @@ void OLED_DrawDashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 dra
     }
 }
 
-void OLED_DrawRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
-    OLED_DrawLine(x0, y0, x0, y1, RAM, draw);
-    OLED_DrawLine(x0,y0,x1,y0,RAM,draw);
-    OLED_DrawLine(x1,y1,x0,y1,RAM,draw);
-    OLED_DrawLine(x1,y1,x1,y0,RAM,draw);
+void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
+    OLED_Draw_Line(x0, y0, x0, y1, RAM, draw);
+    OLED_Draw_Line(x0,y0,x1,y0,RAM,draw);
+    OLED_Draw_Line(x1,y1,x0,y1,RAM,draw);
+    OLED_Draw_Line(x1,y1,x1,y0,RAM,draw);
 }
 
-void OLED_DrawFillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
+void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
     u8 i, j;
     if(x0>x1){i=x1;x1=x0;x0=i;}
     if(y0>y1){i=y1;y1=y0;y0=i;}
     for(i=x0;i<x1;i++)
     {
-        for(j=y0;j<y1;j++)OLED_DrawPoint(i,j,RAM,draw);
+        for(j=y0;j<y1;j++)OLED_Draw_Point(i,j,RAM,draw);
     }
 }
 
@@ -119,7 +119,7 @@ u32 OLED_POW(u8 m,u8 n)
 	return result;
 }
 
-void OLED_ShowChar(u8 x, u8 page, char c, u8 *RAM, u8 draw) {
+void OLED_Show_Char(u8 x, u8 page, char c, u8 *RAM, u8 draw) {
     u8 i;
     switch(draw){
         case 0:
@@ -156,39 +156,39 @@ void OLED_ShowChar(u8 x, u8 page, char c, u8 *RAM, u8 draw) {
 
 }
 
-void OLED_ShowString(u8 x, u8 page, char *str, u8 *RAM, u8 draw) {
+void OLED_Show_String(u8 x, u8 page, char *str, u8 *RAM, u8 draw) {
     u8 i;
     for (i = 0; str[i] != '\0'; i++)
     {
-        OLED_ShowChar(x + i * 8, page, str[i], RAM, draw);
+        OLED_Show_Char(x + i * 8, page, str[i], RAM, draw);
     }
 }
 
-void OLED_ShowNum(u8 x, u8 page, u32 num, u8 len, u8 *RAM, u8 draw) {
+void OLED_Show_Num(u8 x, u8 page, u32 num, u8 len, u8 *RAM, u8 draw) {
     u8 i;
     for (i = 0; i < len; i++)                            
     {
-        OLED_ShowChar(x+i*8, page, num / OLED_POW(10, len - i - 1) % 10 + '0', RAM ,draw);
+        OLED_Show_Char(x+i*8, page, num / OLED_POW(10, len - i - 1) % 10 + '0', RAM ,draw);
     }
 }
 
-void OLED_ShowHexNum(u8 x, u8 page, u32 num, u8 len, u8 *RAM, u8 draw) {
+void OLED_Show_HexNum(u8 x, u8 page, u32 num, u8 len, u8 *RAM, u8 draw) {
     u8 i, SingleNumber;
     for (i = 0; i < len; i++)                            
     {
         SingleNumber = num / OLED_POW(16, len - i - 1) % 16;
         if (SingleNumber < 10)
         {
-            OLED_ShowChar(x + i * 8, page, SingleNumber + '0', RAM ,draw);
+            OLED_Show_Char(x + i * 8, page, SingleNumber + '0', RAM ,draw);
         }
         else
         {
-            OLED_ShowChar(x + i * 8, page, SingleNumber - 10 + 'A', RAM ,draw);
+            OLED_Show_Char(x + i * 8, page, SingleNumber - 10 + 'A', RAM ,draw);
         }
     }
 }
 
-void OLED_ShowCN(u8 x, u8 page, u8 CC[], u8 *RAM, u8 draw) {
+void OLED_Show_CN(u8 x, u8 page, u8 CC[], u8 *RAM, u8 draw) {
     u8 m, n;
     u8 i=0;
     u8 fontnum=0;
@@ -217,21 +217,21 @@ void OLED_ShowCN(u8 x, u8 page, u8 CC[], u8 *RAM, u8 draw) {
             fontnum++;
         }
     }
-    OLED_ShowString(x,page,"??", RAM, draw);
+    OLED_Show_String(x,page,"??", RAM, draw);
 }
 
-void OLED_ShowCNString(u8 x, u8 page, char *String, u8 *RAM, u8 draw) {
+void OLED_Show_CNString(u8 x, u8 page, char *String, u8 *RAM, u8 draw) {
     u8 i;
     u8 c[] ={0,0};
     for (i = 0; String[i] != '\0'; i+=2)
     {
         c[0]=String[i];
         c[1]=String[i+1];
-        OLED_ShowCN(x + i*8, page, c, RAM, draw);
+        OLED_Show_CN(x + i*8, page, c, RAM, draw);
     }
 }
 
-void OLED_ShowBMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw)
+void OLED_Show_BMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw)
 {
     u32 i=0;
     u8 j,k;
@@ -254,7 +254,7 @@ void OLED_ShowBMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw)
     }
 }
 
-void OLED_ShowMixString(u8 x, u8 page, char *String, u8 *RAM, u8 draw)
+void OLED_Show_MixString(u8 x, u8 page, char *String, u8 *RAM, u8 draw)
 {
     u8 i;
     u8 c[] ={0,0};
@@ -262,21 +262,21 @@ void OLED_ShowMixString(u8 x, u8 page, char *String, u8 *RAM, u8 draw)
     {
         if(String[i]<=127)
         {
-            OLED_ShowChar(x+i*8, page, String[i], RAM, draw);
+            OLED_Show_Char(x+i*8, page, String[i], RAM, draw);
             i++;
         }
         else
         {
             c[0]=String[i];
             c[1]=String[i+1];
-            OLED_ShowCN(x + i*8, page, c, RAM, draw);
+            OLED_Show_CN(x + i*8, page, c, RAM, draw);
             i+=2;
         }
     }
 }
 
 // **创建 ELEMENT（动态分配）**
-ELEMENT *OLED_Create_Element(int16_t x, int16_t y, u8 w, u8 h,u8 mix, u8 *data) {
+ELEMENT *OLED_Element_Create(int16_t x, int16_t y, u8 w, u8 h,OLED_MIX_MODE mix, u8 *data) {
     if (elementCount >= MAX_ELEMENTS) return NULL; // 超出最大元素限制
 
     ELEMENT *ele = (ELEMENT *)malloc(sizeof(ELEMENT));
@@ -293,8 +293,7 @@ ELEMENT *OLED_Create_Element(int16_t x, int16_t y, u8 w, u8 h,u8 mix, u8 *data) 
     return ele;
 }
 
-// **修改 ELEMENT**
-void modifyElement(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, u8 *data, u8 mix) {
+void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, u8 *data, OLED_MIX_MODE mix) {
     if (!ele) return;
     ele->x = x;
     ele->y = y;
@@ -305,7 +304,7 @@ void modifyElement(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, u8 *data, u8 
 }
 
 // **删除 ELEMENT**
-void removeElement(u8 index) {
+void OLED_Element_Remove(u8 index) {
     if (index >= elementCount || !elementPtrs[index]) return;
     free(elementPtrs[index]); // 释放内存
     for (u8 i = index; i < elementCount - 1; i++) {
@@ -321,7 +320,24 @@ void OLED_Mix_Print() {
         ELEMENT *e = elementPtrs[n];
         if (!e) continue;
 
-        // 边界保护
+        int16_t px = e->x;
+        int16_t py = e->y;
+        if (px < 0) {
+            px = -px;
+            OLED_Show_Char(0, 6, '-', FrameBuffer, 1);
+        }
+        if (py < 0) {
+            py = -py;
+            OLED_Show_Char(0, 4, '-', FrameBuffer, 1);
+        }
+        OLED_Show_Num(8, 4, py, 3, FrameBuffer, 1);
+        OLED_Show_Num(8, 6, px, 3, FrameBuffer, 1);
+
+        //混合模式0x00不显示
+        if (e->mix == OLED_MIX_HIDE)continue;
+        //宽高为0不显示
+        if (e->w == 0 || e->h == 0)continue;
+        //完全超出不显示
         if (e->x >= OLED_WIDTH || e->y >= OLED_HEIGHT_PIXEL || e->x + e->w <= 0 || e->y + e->h <= 0) continue;
 
         int16_t x0 = e->x < 0 ? 0 : e->x;
@@ -359,23 +375,29 @@ void OLED_Mix_Print() {
                 prev = data;
 
                 int16_t fb_page = page_start + page;
-                if (col >= 0 && col < OLED_WIDTH && fb_page >= 0 && fb_page < OLED_HEIGHT_PIXEL / 8)
-                    FrameBuffer[fb_page * OLED_WIDTH + col] = out;
+                if (col >= 0 && col < OLED_WIDTH && fb_page >= 0 && fb_page < OLED_HEIGHT_PIXEL / 8) {
+                    switch (e->mix)
+                    {
+                        case OLED_MIX_COVER:
+                            FrameBuffer[fb_page * OLED_WIDTH + col] = out;
+                            break;
+                        case OLED_MIX_OR:
+                            FrameBuffer[fb_page * OLED_WIDTH + col] |= out;
+                            break;
+                        case OLED_MIX_AND:
+                            FrameBuffer[fb_page * OLED_WIDTH + col] &= out;
+                            break;
+                        case OLED_MIX_XOR:
+                            FrameBuffer[fb_page * OLED_WIDTH + col] ^= out;
+                            break;
+                    }
+
+                }
+                    
             }
         }
 
-        int16_t px = e->x;
-        int16_t py = e->y;
-        if (px < 0) {
-            px = -px;
-            OLED_ShowChar(0, 6, '-', FrameBuffer, 1);
-        }
-        if (py < 0) {
-            py = -py;
-            OLED_ShowChar(0, 4, '-', FrameBuffer, 1);
-        }
-        OLED_ShowNum(8, 4, py, 3, FrameBuffer, 1);
-        OLED_ShowNum(8, 6, px, 3, FrameBuffer, 1);
+
     }
     OLED_RAM_Refresh(FrameBuffer);
 }

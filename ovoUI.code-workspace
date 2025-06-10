@@ -22,7 +22,17 @@
             "*.cxx": "cpp",
             "*.cc": "cpp",
             "ratio": "c",
-            "rope": "c"
+            "rope": "c",
+            "codecvt": "c",
+            "condition_variable": "c",
+            "forward_list": "c",
+            "list": "c",
+            "string": "c",
+            "functional": "c",
+            "future": "c",
+            "limits": "c",
+            "memory": "c",
+            "regex": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

@@ -11,7 +11,9 @@
 
 u8 ec11 = 0x00;
 extern u8 OLEDSHOW;
-int16_t x = 40, y = 0;
+int16_t x = 40, y = 8;
+
+extern ELEMENT *elementPtrs[MAX_ELEMENTS];
 
 int main(void)
 {
@@ -27,17 +29,25 @@ int main(void)
     OLED_Init();
     EC11_Init();
 
-    //u8 ic[] = {
-	//	0xff,0x81,0x81,0x81,0x81,0x81,0x81,0xff
-	//};
-	//ELEMENT *icon1 = OLED_Create_Element(110, 5, 8, 8, 0x00,ic);
-	ELEMENT *icon1 = OLED_Create_Element(80, 5, 48, 48, 0x00,(u8 *)ICON_48X48[1]);
-	while (1)
+    //ELEMENT *icon1 = OLED_Element_Create(80, 5, 48, 48, OLED_MIX_COVER,(u8 *)ICON_48X48[0]);
+
+    elementPtrs[0] = OLED_Element_Create(80, 5, 48, 48, OLED_MIX_XOR,(u8 *)ICON_48X48[0]);
+    //elementPtrs[0]->x = x;
+    //elementPtrs[0]->y = y;
+    //elementPtrs[0]->w = 48;
+    //elementPtrs[0]->h = 48;
+    //elementPtrs[0]->mix = OLED_MIX_AND;
+    //lementPtrs[0]->data = (u8*)ICON_48X48[1];
+
+    while (1)
 	{
         if (OLEDSHOW)OLED_Display_On();
         else OLED_Display_Off();
 
-        modifyElement(icon1, x, y, 0, 0, (void*)0, 0);
+        //OLED_Element_Modify(icon1, x, y, 0, 0, (void*)0, OLED_MIX_COVER);
+        elementPtrs[0]->x = x;
+        elementPtrs[0]->y = y;
+
         OLED_Mix_Print();
         delay_ms(10);
     }
