@@ -130,6 +130,9 @@
               },
               {
                 "path": "HARDWARE/ovoUI/oled.c"
+              },
+              {
+                "path": "HARDWARE/ovoUI/font.c"
               }
             ],
             "folders": []
