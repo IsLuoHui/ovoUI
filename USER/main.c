@@ -65,6 +65,7 @@ const unsigned char ICON_48X48[][288] =
 u8 OLEDRAM[OLED_SIZE];
 extern u8 framebuffer[1024];
 u8 ec11 = 0x00;
+extern u8 OLEDSHOW;
 u8 x = 0, y = 0;
 
 u8 flushing = 0;
@@ -98,6 +99,8 @@ int main(void)
 	//addElement(&elementList, icon2);
 	while (1)
 	{
+        if (OLEDSHOW)OLED_Display_On();
+        else OLED_Display_Off();
 
         modifyElementByData(elementList, icon1.data, x, y);
         printElements(elementList); // ÷ÿ–¬œ‘ æ

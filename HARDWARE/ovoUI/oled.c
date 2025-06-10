@@ -7,6 +7,9 @@
 // **全局 OLED 显示缓冲区**
 u8 framebuffer[1024] = {0};
 
+ELEMENT *elementPtrs[MAX_ELEMENTS] = {0}; // 存储动态创建的 ELEMENT 指针
+u8 elementCount = 0; // 当前元素数量
+
 // **创建 ELEMENT**
 ELEMENT OLED_Create_Element(u8 x, u8 y, u8 w, u8 h,u8 mix, u8 *data) {
     ELEMENT ele;

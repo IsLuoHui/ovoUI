@@ -5,6 +5,7 @@
 // **定义 OLED 屏幕尺寸**
 #define WIDTH 128
 #define HEIGHT 64
+#define MAX_ELEMENTS 20 // 最大元素数量
 
 // **定义 ELEMENT 结构体**
 typedef struct {

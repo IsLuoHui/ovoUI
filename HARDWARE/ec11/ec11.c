@@ -5,6 +5,7 @@ extern u8 ec11;
 extern u8 x, y;
 
 static u8 EC11_AL;
+u8 OLEDSHOW = 0xff;
 
 void EC11_Init(void) {
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -77,6 +78,7 @@ void TIM4_IRQHandler(void)
         if (ec11 & 0x02 && !(ec11 & 0x01))x--;
         if (ec11 & 0x04 && ec11 & 0x01)y++;
         if (ec11 & 0x02 && ec11 & 0x01)y--;
+        if (ec11 & 0x01)OLEDSHOW=~OLEDSHOW;
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
 	}
 }
