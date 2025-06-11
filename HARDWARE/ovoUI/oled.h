@@ -14,10 +14,10 @@
 //元素混合方式
 typedef enum {
     OLED_MIX_HIDE   = 0x00,   // 隐藏
-    OLED_MIX_COVER  = 0x01,   // 覆盖
-    OLED_MIX_OR     = 0x02,   // 叠加
-    OLED_MIX_AND    = 0x04,   // 叠底
-    OLED_MIX_XOR    = 0x08    // 反色
+    OLED_MIX_COVER  = 0x01,   // 覆盖=
+    OLED_MIX_OR     = 0x02,   // 叠加|
+    OLED_MIX_AND    = 0x04,   // 叠底&
+    OLED_MIX_XOR    = 0x08    // 反色^
 } OLED_MIX_MODE;
 
 /**
@@ -46,7 +46,7 @@ void OLED_Draw_Point(u8 x, u8 y, u8 *RAM, u8 draw);
 void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw);
 void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 draw);
 void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw);
-void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw);
+void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, OLED_MIX_MODE mix);
 
 void OLED_Show_Char(u8 x, u8 page, char c, u8 *RAM, u8 draw);
 void OLED_Show_String(u8 x, u8 page, char *str, u8 *RAM, u8 draw);

@@ -93,19 +93,47 @@ void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 dr
 }
 
 void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
-    OLED_Draw_Line(x0, y0, x0, y1, RAM, draw);
-    OLED_Draw_Line(x0,y0,x1,y0,RAM,draw);
-    OLED_Draw_Line(x1,y1,x0,y1,RAM,draw);
-    OLED_Draw_Line(x1,y1,x1,y0,RAM,draw);
+    OLED_Draw_Line(x0, y0, x1, y0, RAM, draw);
+    OLED_Draw_Line(x1, y0, x1, y1, RAM, draw);
+    OLED_Draw_Line(x1, y1, x0, y1, RAM, draw);
+    OLED_Draw_Line(x0, y1, x0, y0, RAM, draw);
 }
 
-void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
-    u8 i, j;
-    if(x0>x1){i=x1;x1=x0;x0=i;}
-    if(y0>y1){i=y1;y1=y0;y0=i;}
-    for(i=x0;i<x1;i++)
-    {
-        for(j=y0;j<y1;j++)OLED_Draw_Point(i,j,RAM,draw);
+void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, OLED_MIX_MODE mix) {
+    if (mix == OLED_MIX_HIDE)return;
+    if (x0 > x1) { u8 t = x0; x0 = x1; x1 = t; }
+    if (y0 > y1) { u8 t = y0; y0 = y1; y1 = t; }
+    if (x1 > OLED_WIDTH) x1 = OLED_WIDTH;
+    if (y1 > OLED_HEIGHT_PIXEL) y1 = OLED_HEIGHT_PIXEL;
+
+    u8 page_start = y0 / 8;
+    u8 page_end = (y1 - 1) / 8;
+    u8 mask_start = 0xFF << (y0 % 8);
+    u8 mask_end = 0xFF >> (7 - ((y1 - 1) % 8));
+
+    for (u8 x = x0; x < x1; x++) {
+        for (u8 page = page_start; page <= page_end; page++) {
+            u8 mask = 0xFF;
+            if (page == page_start) mask &= mask_start;
+            if (page == page_end)   mask &= mask_end;
+            u16 idx = page * OLED_WIDTH + x;
+            switch (mix) {
+                case OLED_MIX_COVER:
+                    RAM[idx] = (RAM[idx] & ~mask) | mask;
+                    break;
+                case OLED_MIX_OR:
+                    RAM[idx] |= mask;
+                    break;
+                case OLED_MIX_AND:
+                    RAM[idx] &= mask;
+                    break;
+                case OLED_MIX_XOR:
+                    RAM[idx] ^= mask;
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
 
@@ -310,6 +338,7 @@ void OLED_Element_Remove(u8 index) {
 }
 
 void OLED_Mix_Print() {
+    // TODO 将数组循环拆分到外部，数组大小和循环由用户控制
     //memset(FrameBuffer, 0, 1024);
     for (u8 n = 0; n < elementCount; n++) {
         ELEMENT *e = elementPtrs[n];

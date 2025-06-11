@@ -14,6 +14,11 @@ extern u8 left;
 extern u8 right;
 extern int16_t TargetX;
 
+extern u8 cur_x;
+extern u8 cur_y;
+extern u8 cur_w;
+extern u8 cur_h;
+
 int main(void)
 {
 
@@ -55,10 +60,14 @@ int main(void)
 
         OLED_Show_Num(0, 0, GlobalX, 5, FrameBuffer, 1);
         //OLED_Show_Num(0, 2, temp, 3, FrameBuffer, 1);
-        OLED_Show_Num(0, 4, TargetX, 5, FrameBuffer, 1);
-        OLED_Show_HexNum(0, 6, Ec11Trigger, 3, FrameBuffer, 1);
-        OLED_Mix_Print();
-        
+        OLED_Show_HexNum(0, 4, Ec11Trigger, 3, FrameBuffer, 1);
+        OLED_Show_Num(0, 6, TargetX, 5, FrameBuffer, 1);
+
+
+        OLED_Mix_Print();//‘™Àÿ‰÷»æ
+
+        OLED_Draw_FillRect(cur_x, cur_y, cur_w, cur_h, FrameBuffer, OLED_MIX_XOR);
+
         OLED_RAM_Refresh(FrameBuffer);
 
         delay_ms(10);

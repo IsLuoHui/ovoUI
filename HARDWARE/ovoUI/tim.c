@@ -7,11 +7,16 @@
 
 u8 left = 0;
 u8 right = 0;
-float t = 0;
 
+float t = 0;
 int16_t GlobalX = 40;
-int16_t TargetX;
-int16_t temp_GX;
+int16_t TargetX = 40;
+int16_t animStartX; // 动画起点
+
+u8 cur_x = 40;
+u8 cur_y = 8;
+u8 cur_w = 40 + ICON48W;
+u8 cur_h = 8 + ICON48H;
 
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -41,98 +46,54 @@ void TIM3_Init(void) {
 
 void TIM3_IRQHandler(void)
 { 	
-	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)//是更新中断
-    {
-        if (right == 1 || left == 1) {
-            TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-            DrawShow();
-            return;
-        }
-        
+    if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
         switch (Ec11Trigger) {
             case EC11TURNRIGTH:
-                if (right || left)break;
-                right = 1;
-                temp_GX = GlobalX;
-                TargetX = GlobalX + ICONSPACE + ICON48W;
+                animStartX = GlobalX; // 关键：每次目标变化都更新起点
+                TargetX += (ICONSPACE + ICON48W);
                 t = 0;
-
+                Ec11Trigger = 0;
                 break;
             case EC11TURNLEFT:
-                if (right || left)break;
-                temp_GX = GlobalX;
-                TargetX = GlobalX - (ICONSPACE + ICON48W);
-                left = 1;
+                animStartX = GlobalX;
+                TargetX -= (ICONSPACE + ICON48W);
                 t = 0;
-                
+                Ec11Trigger = 0;
                 break;
             case EC11BUTTON:
-                if (right || left)break;
-
-                Ec11Trigger = 0x00;
+                Ec11Trigger = 0;
                 break;
             default:
-                Ec11Trigger = 0x00;
+                Ec11Trigger = 0;
                 break;
         }
 
-        if (Ec11Trigger)LED_ON;
+        if (Ec11Trigger) LED_ON;
         else LED_OFF;
 
-
-
-
-
-
-
-
-
-        TIM_ClearITPendingBit(TIM3, TIM_IT_Update);  //清除TIM4更新中断标志
-	}
+        TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+        DrawShow();
+    }
 }
 
 int lerp(int start, int end, float t) {
     return start + (int)((end - start) * t);
 }
 float easeOut(float t) {
-    return 1 - (1 - t) * (1 - t); // 先快后慢
+    return t * (2 - t);
 }
-float easeIn(float t) {
-    return t * t;  // 先慢后快（二次函数）
-}
-float easeInExpo(float t) {
-    return (t == 0) ? 0 : pow(2, 10 * (t - 1));  // 指数增长
-}
-float easeInOut(float t) {
-    return (t < 0.5) ? 2 * t * t : 1 - pow(-2 * t + 2, 2) / 2;
-}
-
 
 void DrawShow(void) {
-    // TODO 动画效果
-    if (right) {
+    if (GlobalX != TargetX) {
         t += 0.004f;
-        if (t>=1.0f) {
-            right = 0;
-            Ec11Trigger = 0;
+        if (t >= 1.0f) t = 1.0f;
+        GlobalX = lerp(animStartX, TargetX, easeOut(t));
+        if (t >= 1.0f) {
+            GlobalX = TargetX;
+            animStartX = TargetX;
             t = 0;
-            GlobalX=TargetX;
-            return;
         }
-        GlobalX=lerp(temp_GX, TargetX, easeOut(t));
-        //GlobalX += 1;
-        //temp += 1;
-    }
-    if (left) {
-        t += 0.005f;
-        if (t>=1.0f) {
-            left = 0;
-            Ec11Trigger = 0;
-            t = 0;
-            GlobalX=TargetX;
-            return;
-        }
-        GlobalX=lerp(temp_GX, TargetX, easeInExpo(t));
+    } else {
+        animStartX = TargetX = GlobalX;
     }
 }
-
