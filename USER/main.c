@@ -12,7 +12,7 @@ int16_t x = 40, y = 8;
 
 extern u8 left;
 extern u8 right;
-extern u8 temp;
+extern int16_t TargetX;
 
 int main(void)
 {
@@ -34,6 +34,7 @@ int main(void)
     //elementPtrs[0]->h = 48;
     //elementPtrs[0]->mix = OLED_MIX_AND;
 
+
     while (1)
 	{
 
@@ -49,11 +50,12 @@ int main(void)
         //for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.y += y;
 
 
+
         memset(FrameBuffer, 0, 1024);
 
         OLED_Show_Num(0, 0, GlobalX, 5, FrameBuffer, 1);
-        OLED_Show_Num(0, 2, temp, 3, FrameBuffer, 1);
-        OLED_Show_Num(0, 4, right, 3, FrameBuffer, 1);
+        //OLED_Show_Num(0, 2, temp, 3, FrameBuffer, 1);
+        OLED_Show_Num(0, 4, TargetX, 5, FrameBuffer, 1);
         OLED_Show_HexNum(0, 6, Ec11Trigger, 3, FrameBuffer, 1);
         OLED_Mix_Print();
         

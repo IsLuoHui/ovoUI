@@ -77,7 +77,7 @@ void OLED_Init(void) {
     OLED_W_CMD(0x10);//---set high column address
     OLED_W_CMD(0x40);//--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
     OLED_W_CMD(0x81);//--set contrast control register
-    OLED_W_CMD(0xCF); // Set SEG Output Current Brightness
+    OLED_W_CMD(0x00); // 亮度变化量很小
     OLED_W_CMD(0xA1);//--Set SEG/Column Mapping     0xa0左右反置 0xa1正常
     OLED_W_CMD(0xC8);//Set COM/Row Scan Direction   0xc0上下反置 0xc8正常
     OLED_W_CMD(0xA6);//--set normal display

@@ -33,7 +33,9 @@
             "limits": "c",
             "memory": "c",
             "regex": "c",
-            "array": "c"
+            "array": "c",
+            "cmath": "c",
+            "complex": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

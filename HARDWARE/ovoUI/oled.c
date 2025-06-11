@@ -387,9 +387,7 @@ void OLED_Mix_Print() {
                             FrameBuffer[fb_page * OLED_WIDTH + col] ^= out;
                             break;
                     }
-
                 }
-                    
             }
         }
     }

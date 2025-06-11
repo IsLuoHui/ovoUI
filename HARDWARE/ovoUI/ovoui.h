@@ -9,7 +9,7 @@ typedef struct
     void (*action)(void);
 }OPTION;
 
-#define ICONSPACE 16
+#define ICONSPACE 24
 
 void MenuInit(void);
 

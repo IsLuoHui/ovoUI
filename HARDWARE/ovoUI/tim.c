@@ -3,13 +3,15 @@
 #include "oled.h"
 #include "ovoui.h"
 #include "font.h"
+#include "math.h"
 
 u8 left = 0;
 u8 right = 0;
-u8 temp = 0;
+float t = 0;
 
-extern int16_t GlobalX = 40;
-
+int16_t GlobalX = 40;
+int16_t TargetX;
+int16_t temp_GX;
 
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -51,10 +53,18 @@ void TIM3_IRQHandler(void)
             case EC11TURNRIGTH:
                 if (right || left)break;
                 right = 1;
+                temp_GX = GlobalX;
+                TargetX = GlobalX + ICONSPACE + ICON48W;
+                t = 0;
+
                 break;
             case EC11TURNLEFT:
                 if (right || left)break;
+                temp_GX = GlobalX;
+                TargetX = GlobalX - (ICONSPACE + ICON48W);
                 left = 1;
+                t = 0;
+                
                 break;
             case EC11BUTTON:
                 if (right || left)break;
@@ -81,30 +91,48 @@ void TIM3_IRQHandler(void)
 	}
 }
 
-void Animation(u8 status) {
-
+int lerp(int start, int end, float t) {
+    return start + (int)((end - start) * t);
 }
+float easeOut(float t) {
+    return 1 - (1 - t) * (1 - t); // 先快后慢
+}
+float easeIn(float t) {
+    return t * t;  // 先慢后快（二次函数）
+}
+float easeInExpo(float t) {
+    return (t == 0) ? 0 : pow(2, 10 * (t - 1));  // 指数增长
+}
+float easeInOut(float t) {
+    return (t < 0.5) ? 2 * t * t : 1 - pow(-2 * t + 2, 2) / 2;
+}
+
 
 void DrawShow(void) {
     // TODO 动画效果
     if (right) {
-        if (temp == (ICONSPACE + ICON48W)) {
-            temp = 0;
+        t += 0.004f;
+        if (t>=1.0f) {
             right = 0;
             Ec11Trigger = 0;
+            t = 0;
+            GlobalX=TargetX;
             return;
         }
-        GlobalX += 1;
-        temp += 1;
+        GlobalX=lerp(temp_GX, TargetX, easeOut(t));
+        //GlobalX += 1;
+        //temp += 1;
     }
     if (left) {
-        if (temp == (ICONSPACE + ICON48W)) {
-            temp = 0;
+        t += 0.005f;
+        if (t>=1.0f) {
             left = 0;
             Ec11Trigger = 0;
+            t = 0;
+            GlobalX=TargetX;
             return;
         }
-        GlobalX -= 1;
-        temp += 1;
+        GlobalX=lerp(temp_GX, TargetX, easeInExpo(t));
     }
 }
+
