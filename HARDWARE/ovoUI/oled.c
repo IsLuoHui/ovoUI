@@ -272,7 +272,6 @@ void OLED_Show_MixString(u8 x, u8 page, char *String, u8 *RAM, u8 draw)
     }
 }
 
-// **创建 ELEMENT（动态分配）**
 ELEMENT *OLED_Element_Create(int16_t x, int16_t y, u8 w, u8 h,OLED_MIX_MODE mix, u8 *data) {
     if (elementCount >= MAX_ELEMENTS) return NULL; // 超出最大元素限制
 
@@ -300,7 +299,6 @@ void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, OLED_MI
     ele->data = data;
 }
 
-// **删除 ELEMENT**
 void OLED_Element_Remove(u8 index) {
     if (index >= elementCount || !elementPtrs[index]) return;
     free(elementPtrs[index]); // 释放内存

@@ -6,26 +6,22 @@
 #include "oled.h"
 #include "font.h"
 #include "ovoui.h"
-
-
-#define LED_OFF (GPIOC->BSRR = GPIO_Pin_13) //H
-#define LED_ON (GPIOC->BRR = GPIO_Pin_13)	//L
+#include "tim.h"
 
 int16_t x = 40, y = 8;
 
+extern u8 left;
+extern u8 right;
+extern u8 temp;
+
 int main(void)
 {
-    GPIO_InitTypeDef GPIO_InitStruct;
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13;
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStruct.GPIO_Speed=GPIO_Speed_50MHz;
-    GPIO_Init(GPIOC, &GPIO_InitStruct);
-    LED_OFF;
+
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     OLED_SPI_GPIO_Init();
     OLED_Init();
     EC11_Init();
+    TIM3_Init();
 
     MenuInit();
     for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.data = (u8 *)ICON_48X48[i];
@@ -45,16 +41,22 @@ int main(void)
         //elementPtrs[0]->x = x;
         //elementPtrs[0]->y = y;
 
-        MainMenu[0].ele.x = x - ICON48W - ICONSPACE;
-        MainMenu[1].ele.x = x;
-        MainMenu[2].ele.x = x + ICON48W + ICONSPACE;
+        MainMenu[0].ele.x = GlobalX - ICON48W - ICONSPACE;
+        MainMenu[1].ele.x = GlobalX;
+        MainMenu[2].ele.x = GlobalX + ICON48W + ICONSPACE;
 
         //for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.x += x;
         //for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.y += y;
 
 
         memset(FrameBuffer, 0, 1024);
+
+        OLED_Show_Num(0, 0, GlobalX, 5, FrameBuffer, 1);
+        OLED_Show_Num(0, 2, temp, 3, FrameBuffer, 1);
+        OLED_Show_Num(0, 4, right, 3, FrameBuffer, 1);
+        OLED_Show_HexNum(0, 6, Ec11Trigger, 3, FrameBuffer, 1);
         OLED_Mix_Print();
+        
         OLED_RAM_Refresh(FrameBuffer);
 
         delay_ms(10);

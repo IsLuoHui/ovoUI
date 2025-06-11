@@ -7,9 +7,9 @@ void Setting(void) {
 }
 
 OPTION MainMenu[] = {
-    { {ICON48W+ICONSPACE, 0, ICON48W, ICON48H, OLED_MIX_COVER, (void*)0}, Setting },
-    { {0, 0, ICON48W, ICON48H, OLED_MIX_COVER, (void *)0}, Setting },
-    { {-(ICON48W+ICONSPACE), 0, ICON48W, ICON48H, OLED_MIX_COVER, (void*)0}, Setting },
+    { {ICON48W+ICONSPACE, 0, ICON48W, ICON48H, OLED_MIX_XOR, (void*)0}, Setting },
+    { {0, 0, ICON48W, ICON48H, OLED_MIX_XOR, (void *)0}, Setting },
+    { {-(ICON48W+ICONSPACE), 0, ICON48W, ICON48H, OLED_MIX_XOR, (void*)0}, Setting },
 };
 
 void MenuInit(void){
