@@ -133,6 +133,9 @@
               },
               {
                 "path": "HARDWARE/ovoUI/font.c"
+              },
+              {
+                "path": "HARDWARE/ovoUI/ovoui.c"
               }
             ],
             "folders": []

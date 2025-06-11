@@ -4,14 +4,11 @@
 #include "string.h"
 #include "font.h"
 
-
-// **全局 OLED 显示缓冲区**
 u8 FrameBuffer[OLED_BUFFER_SIZE] = {0};
+ELEMENT *elementPtrs[MAX_ELEMENTS] = {0};
+u8 elementCount = 0;
+
 static u16 RAMCursor;
-
-ELEMENT *elementPtrs[MAX_ELEMENTS] = {0}; // 存储动态创建的 ELEMENT 指针
-u8 elementCount = 0; // 当前元素数量
-
 
 void OLED_RAM_Refresh(u8 *RAM) {
     u8 x, y;
@@ -293,14 +290,14 @@ ELEMENT *OLED_Element_Create(int16_t x, int16_t y, u8 w, u8 h,OLED_MIX_MODE mix,
     return ele;
 }
 
-void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, u8 *data, OLED_MIX_MODE mix) {
+void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, OLED_MIX_MODE mix, u8 *data) {
     if (!ele) return;
     ele->x = x;
     ele->y = y;
-    //ele->w = (x + w > OLED_WIDTH) ? OLED_WIDTH - x : w;
-    //ele->h = (y + h > OLED_HEIGHT_PIXEL) ? OLED_HEIGHT_PIXEL - y : h;
-    //ele->data = data;
-    //ele->mix = mix;
+    ele->w = (x + w > OLED_WIDTH) ? OLED_WIDTH - x : w;
+    ele->h = (y + h > OLED_HEIGHT_PIXEL) ? OLED_HEIGHT_PIXEL - y : h;
+    ele->mix = mix;
+    ele->data = data;
 }
 
 // **删除 ELEMENT**
@@ -315,11 +312,12 @@ void OLED_Element_Remove(u8 index) {
 }
 
 void OLED_Mix_Print() {
-    memset(FrameBuffer, 0, 1024);
+    //memset(FrameBuffer, 0, 1024);
     for (u8 n = 0; n < elementCount; n++) {
         ELEMENT *e = elementPtrs[n];
         if (!e) continue;
 
+        #ifdef DEBUG
         int16_t px = e->x;
         int16_t py = e->y;
         if (px < 0) {
@@ -332,6 +330,7 @@ void OLED_Mix_Print() {
         }
         OLED_Show_Num(8, 4, py, 3, FrameBuffer, 1);
         OLED_Show_Num(8, 6, px, 3, FrameBuffer, 1);
+        #endif
 
         //混合模式0x00不显示
         if (e->mix == OLED_MIX_HIDE)continue;
@@ -353,7 +352,6 @@ void OLED_Mix_Print() {
             page_start = (e->y - 7) / 8; // 向下取整
             y_offset = (8 - (abs_y % 8)) % 8;
         }
-
         // 计算需要显示的页数，确保像素全部显示
         u8 page_cnt = (e->h + y_offset + 7) / 8;
 
@@ -396,8 +394,6 @@ void OLED_Mix_Print() {
                     
             }
         }
-
-
     }
-    OLED_RAM_Refresh(FrameBuffer);
+    //OLED_RAM_Refresh(FrameBuffer);
 }

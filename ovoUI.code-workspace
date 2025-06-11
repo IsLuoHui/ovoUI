@@ -32,7 +32,8 @@
             "future": "c",
             "limits": "c",
             "memory": "c",
-            "regex": "c"
+            "regex": "c",
+            "array": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

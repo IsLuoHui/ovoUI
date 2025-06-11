@@ -9,9 +9,9 @@
 #define OLED_HEIGHT_PIXEL (OLED_HEIGHT_PAGE*8) //page
 #define OLED_BUFFER_SIZE (OLED_WIDTH * OLED_HEIGHT_PAGE)
 
-
 #define MAX_ELEMENTS 20 // 最大元素数量
 
+//元素混合方式
 typedef enum {
     OLED_MIX_HIDE   = 0x00,   // 隐藏
     OLED_MIX_COVER  = 0x01,   // 覆盖
@@ -58,9 +58,13 @@ void OLED_Show_BMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 void OLED_Show_MixString(u8 x, u8 page, char *String, u8 * RAM, u8 draw);
 
 ELEMENT *OLED_Element_Create(int16_t x, int16_t y, u8 w, u8 h, OLED_MIX_MODE mix, u8 *data);
-void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, u8 *data, OLED_MIX_MODE mix);
+void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, OLED_MIX_MODE mix, u8 *data);
 void OLED_Element_Remove(u8 index);
 
 void OLED_Mix_Print();
+
+extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
+extern ELEMENT *elementPtrs[MAX_ELEMENTS]; // *动态分配ELEMENT数组
+extern u8 elementCount; // *当前元素数量
 
 #endif

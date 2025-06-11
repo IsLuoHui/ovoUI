@@ -15,7 +15,8 @@ extern const struct GB16 GB2312_16X16[];
 
 
 //图标 垂直扫描，从左到右，从上到下，高位在前
-//48x48
+#define ICON48W 48
+#define ICON48H 48
 extern const unsigned char ICON_48X48[][288];
 
 #endif

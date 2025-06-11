@@ -1,11 +1,10 @@
 #include "ec11.h"
 #include "spi.h"
 
-extern u8 ec11;
+u8 ec11=0x00;
 extern int16_t x, y;
 
 static u8 EC11_AL;
-u8 OLEDSHOW = 1;
 
 void EC11_Init(void) {
     RCC->APB2ENR |= EC11_A_PIN_RCC | EC11_B_PIN_RCC | EC11_K_PIN_RCC;
@@ -98,19 +97,15 @@ void TIM4_IRQHandler(void)
         ec11 = EC11_Scan();
         if (ec11 & 0x04 && !(ec11 & 0x01)) {
             x++;
-            OLEDSHOW = 1;
         }
         if (ec11 & 0x02 && !(ec11 & 0x01)) {
             x--;
-            OLEDSHOW = 1;
         }
         if (ec11 & 0x04 && ec11 & 0x01) {
             y++;
-            OLEDSHOW = 1;
         }
         if (ec11 & 0x02 && ec11 & 0x01) {
             y--;
-            OLEDSHOW = 1;
         }
         //if (!(ec11 & 0x06) && ec11 & 0x01)OLEDSHOW = 0;
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
