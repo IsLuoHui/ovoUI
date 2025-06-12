@@ -5,16 +5,17 @@
 #include "math.h"
 
 float t = 0;
+float gt = 0;
 int16_t GlobalX = 0;
 int16_t TargetX = 0;
 int16_t LeftEnd = 0;
 int16_t RightEnd = 0;
 int16_t animStartX; // 缓动计算起点
 
-u8 cur_x = 40;
-u8 cur_y = 8;
-u8 cur_w = 40 + ICON48W;
-u8 cur_h = 8 + ICON48H;
+u8 cur_x1 = CURX;
+u8 cur_y1 = CURY;
+u8 cur_x2 = CURX + CURW;
+u8 cur_y2 = CURY + CURH;
 
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -83,7 +84,31 @@ float easeOut(float t) {
 
 void DrawShow(void) {
     //TODO 根据显示模式绘制
-    //TODO 光标动效
+    //TODO 光标动效优化
+    //if (GlobalX != TargetX) {
+    //    cur_x1 = CURX - 4;
+    //    cur_x2 = CURX + CURW + 4;
+    //    cur_y1 = CURY + 4;
+    //    cur_y2 = CURY + CURH - 4;
+    //}
+    //else {
+    //    cur_x1 = CURX;
+    //    cur_x2 = CURX + CURW;
+    //    cur_y1 = CURY;
+    //    cur_y2 = CURY + CURH;
+    //}
+    if (GlobalX != TargetX) {
+        cur_x1 = lerp(CURX - 4, CURX, gt);
+        cur_x2 = lerp(CURX + CURW + 4, CURX + CURW, gt);
+        cur_y1 = lerp(CURY + 4, CURY, gt);
+        cur_y2 = lerp(CURY + CURH - 4, CURY + CURH, gt);
+    }
+    if(GlobalX == TargetX&&cur_x1!=CURX) {
+        cur_x1 = lerp(CURX, CURX - 4, gt);
+        cur_x2 = lerp(CURX + CURW, CURX + CURW + 4, gt);
+        cur_y1 = lerp(CURY, CURY + 4, gt);
+        cur_y2 = lerp(CURY + CURH, CURY + CURH - 4, gt);
+    }
 
     if (GlobalX > LeftEnd + ICON48W / 2) {
         animStartX = GlobalX;
@@ -97,11 +122,13 @@ void DrawShow(void) {
     if (GlobalX != TargetX) {
         t += 0.003f;
         if (t >= 1.0f) t = 1.0f;
-        GlobalX = lerp(animStartX, TargetX, easeOut(t));
+        gt = EASE_OUT(t);
+        GlobalX = lerp(animStartX, TargetX, gt);
         if (t >= 1.0f) {
             GlobalX = TargetX;
             animStartX = TargetX;
             t = 0;
+            gt = 0;
         }
     } else {
         animStartX = TargetX = GlobalX;

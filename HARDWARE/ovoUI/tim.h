@@ -6,6 +6,13 @@
 #define LED_OFF (GPIOC->BSRR = GPIO_Pin_13) //H
 #define LED_ON (GPIOC->BRR = GPIO_Pin_13)	//L
 
+#define EASE_OUT(t) ((t) * (2 - (t)))
+
+#define CURX 40
+#define CURY 8
+#define CURW 48
+#define CURH 48
+
 void TIM3_Init(void);
 void DrawShow(void);
 

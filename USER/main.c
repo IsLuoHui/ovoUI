@@ -8,16 +8,16 @@
 #include "ovoui.h"
 #include "tim.h"
 
-int16_t x = 40, y = 8;
+//#define DEBUG
 
 extern u8 left;
 extern u8 right;
 extern int16_t TargetX;
 
-extern u8 cur_x;
-extern u8 cur_y;
-extern u8 cur_w;
-extern u8 cur_h;
+extern u8 cur_x1;
+extern u8 cur_y1;
+extern u8 cur_x2;
+extern u8 cur_y2;
 
 int main(void)
 {
@@ -29,7 +29,7 @@ int main(void)
     TIM3_Init();
 
     for (u8 i = 0;i < menus[0].optnum;i++) {
-        menus[0].opt[i].ele.y = y;
+        menus[0].opt[i].ele.y = 8;
         menus[0].opt[i].ele.w = ICON48W;
         menus[0].opt[i].ele.h = ICON48H;
         menus[0].opt[i].ele.mix = OLED_MIX_XOR;
@@ -48,6 +48,7 @@ int main(void)
 
         memset(FrameBuffer, 0, 1024);
 
+        #ifdef DEBUG
         int16_t gx = GlobalX;
         int16_t tx = TargetX;
         if (gx < 0) {
@@ -58,15 +59,17 @@ int main(void)
             tx = -tx;
             OLED_Show_Char(0, 6, '-', FrameBuffer, 1);
         }
-
         OLED_Show_Num(8, 0, gx, 5, FrameBuffer, 1);
-        //OLED_Show_Num(0, 2, option_num, 2, FrameBuffer, 1);
-        //OLED_Show_HexNum(0, 4, Ec11Trigger, 3, FrameBuffer, 1);
         OLED_Show_Num(8, 6, tx, 5, FrameBuffer, 1);
+        #endif
 
         for (u8 i = 0;i < menus[0].optnum;i++)OLED_Show_Element(menus[0].opt[i].ele);
 
-        OLED_Draw_FillRect(cur_x, cur_y, cur_w, cur_h, FrameBuffer, OLED_MIX_XOR);
+        OLED_Draw_FillRect(cur_x1, cur_y1, cur_x2, cur_y2, FrameBuffer, OLED_MIX_XOR);
+        OLED_Draw_Point(cur_x1, cur_y1, FrameBuffer, 2);
+        OLED_Draw_Point(cur_x1, cur_y2-1, FrameBuffer, 2);
+        OLED_Draw_Point(cur_x2-1, cur_y1, FrameBuffer, 2);
+        OLED_Draw_Point(cur_x2-1, cur_y2-1, FrameBuffer, 2);
 
         OLED_RAM_Refresh(FrameBuffer);
 
