@@ -7,7 +7,9 @@
 float t = 0;
 int16_t GlobalX = 0;
 int16_t TargetX = 0;
-int16_t animStartX; // 动画起点
+int16_t LeftEnd = 0;
+int16_t RightEnd = 0;
+int16_t animStartX; // 缓动计算起点
 
 u8 cur_x = 40;
 u8 cur_y = 8;
@@ -45,7 +47,7 @@ void TIM3_IRQHandler(void)
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
         switch (Ec11Trigger) {
             case EC11TURNRIGTH:
-                animStartX = GlobalX; // 关键：每次目标变化都更新起点
+                animStartX = GlobalX;
                 TargetX += (ICONSPACE + ICON48W);
                 t = 0;
                 Ec11Trigger = 0;
@@ -80,7 +82,18 @@ float easeOut(float t) {
 }
 
 void DrawShow(void) {
-    //TODO 菜单两端限制滑动
+    //TODO 根据显示模式绘制
+    //TODO 光标动效
+
+    if (GlobalX > LeftEnd + ICON48W / 2) {
+        animStartX = GlobalX;
+        TargetX = LeftEnd;
+    }
+    if (GlobalX < RightEnd - ICON48W / 2) {
+        animStartX = GlobalX;
+        TargetX = RightEnd;
+    }
+
     if (GlobalX != TargetX) {
         t += 0.003f;
         if (t >= 1.0f) t = 1.0f;
@@ -98,4 +111,6 @@ void DrawShow(void) {
 void Position_Init(MENU menu) {
     GlobalX = menu.position;
     TargetX = menu.position;
+    LeftEnd = menu.leftend;
+    RightEnd = LeftEnd-(ICON48W+ICONSPACE)*(menu.optnum-1);
 }

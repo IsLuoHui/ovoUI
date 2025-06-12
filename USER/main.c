@@ -28,10 +28,6 @@ int main(void)
     EC11_Init();
     TIM3_Init();
 
-
-    MainMenuInit();
-
-
     for (u8 i = 0;i < menus[0].optnum;i++) {
         menus[0].opt[i].ele.y = y;
         menus[0].opt[i].ele.w = ICON48W;
@@ -52,10 +48,21 @@ int main(void)
 
         memset(FrameBuffer, 0, 1024);
 
-        OLED_Show_Num(0, 0, GlobalX, 5, FrameBuffer, 1);
+        int16_t gx = GlobalX;
+        int16_t tx = TargetX;
+        if (gx < 0) {
+            gx = -gx;
+            OLED_Show_Char(0, 0, '-', FrameBuffer, 1);
+        }
+        if (tx < 0) {
+            tx = -tx;
+            OLED_Show_Char(0, 6, '-', FrameBuffer, 1);
+        }
+
+        OLED_Show_Num(8, 0, gx, 5, FrameBuffer, 1);
         //OLED_Show_Num(0, 2, option_num, 2, FrameBuffer, 1);
         //OLED_Show_HexNum(0, 4, Ec11Trigger, 3, FrameBuffer, 1);
-        OLED_Show_Num(0, 6, TargetX, 5, FrameBuffer, 1);
+        OLED_Show_Num(8, 6, tx, 5, FrameBuffer, 1);
 
         for (u8 i = 0;i < menus[0].optnum;i++)OLED_Show_Element(menus[0].opt[i].ele);
 

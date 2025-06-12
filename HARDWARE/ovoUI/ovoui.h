@@ -16,18 +16,17 @@ typedef enum {
 
 typedef struct
 {
-    OPTION *opt;
-    MENU_SHOW_MODE mode;
-    u8 optnum;
-    int16_t position;
+    OPTION *opt;    //选项列表
+    MENU_SHOW_MODE mode; //显示方式 //TODO 大图标显示和列表显示
+    u8 optnum;  //选项个数
+    u8 leftend; //左端
+    int16_t position; //显示位置，用于记录上次选中
 }MENU;
 
 
 #define ICONSPACE 24
 
-void MainMenuInit(void);
-
-extern MENU menus[1];
+extern MENU menus[];
 extern OPTION MainMenu[];
 
 #endif
