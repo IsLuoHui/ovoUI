@@ -28,43 +28,36 @@ int main(void)
     EC11_Init();
     TIM3_Init();
 
-    MenuInit();
-    for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.data = (u8 *)ICON_48X48[i];
-    for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.y = y;
-    //MainMenu[0].ele.data = (u8 *)ICON_48X48[1];
 
-    //elementPtrs[0]->x = x;
-    //elementPtrs[0]->y = y;
-    //elementPtrs[0]->w = 48;
-    //elementPtrs[0]->h = 48;
-    //elementPtrs[0]->mix = OLED_MIX_AND;
+    MainMenuInit();
 
+
+    for (u8 i = 0;i < menus[0].optnum;i++) {
+        menus[0].opt[i].ele.y = y;
+        menus[0].opt[i].ele.w = ICON48W;
+        menus[0].opt[i].ele.h = ICON48H;
+        menus[0].opt[i].ele.mix = OLED_MIX_XOR;
+        menus[0].opt[i].ele.data = (u8 *)ICON_48X48[i];
+    }
+    Position_Init(menus[0]);
 
     while (1)
 	{
+        for (u8 i = 0;i < menus[0].optnum;i++){
+            menus[0].opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
+        }
 
-        //OLED_Element_Modify(icon1, x, y, 0, 0, (void*)0, OLED_MIX_COVER);
-        //elementPtrs[0]->x = x;
-        //elementPtrs[0]->y = y;
-
-        MainMenu[0].ele.x = GlobalX - ICON48W - ICONSPACE;
-        MainMenu[1].ele.x = GlobalX;
-        MainMenu[2].ele.x = GlobalX + ICON48W + ICONSPACE;
-
-        //for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.x += x;
-        //for (u8 i = 0;i < elementCount;i++)MainMenu[i].ele.y += y;
 
 
 
         memset(FrameBuffer, 0, 1024);
 
         OLED_Show_Num(0, 0, GlobalX, 5, FrameBuffer, 1);
-        //OLED_Show_Num(0, 2, temp, 3, FrameBuffer, 1);
-        OLED_Show_HexNum(0, 4, Ec11Trigger, 3, FrameBuffer, 1);
+        //OLED_Show_Num(0, 2, option_num, 2, FrameBuffer, 1);
+        //OLED_Show_HexNum(0, 4, Ec11Trigger, 3, FrameBuffer, 1);
         OLED_Show_Num(0, 6, TargetX, 5, FrameBuffer, 1);
 
-
-        OLED_Mix_Print();//ÔªËØäÖÈ¾
+        for (u8 i = 0;i < menus[0].optnum;i++)OLED_Show_Element(menus[0].opt[i].ele);
 
         OLED_Draw_FillRect(cur_x, cur_y, cur_w, cur_h, FrameBuffer, OLED_MIX_XOR);
 

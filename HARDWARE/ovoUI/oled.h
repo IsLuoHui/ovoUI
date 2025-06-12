@@ -57,14 +57,7 @@ void OLED_Show_CNString(u8 x, u8 page, char *String, u8 *RAM, u8 draw);
 void OLED_Show_BMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 void OLED_Show_MixString(u8 x, u8 page, char *String, u8 * RAM, u8 draw);
 
-ELEMENT *OLED_Element_Create(int16_t x, int16_t y, u8 w, u8 h, OLED_MIX_MODE mix, u8 *data);
-void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, OLED_MIX_MODE mix, u8 *data);
-void OLED_Element_Remove(u8 index);
-
-void OLED_Mix_Print();
-
+void OLED_Show_Element(ELEMENT ele);
 extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
-extern ELEMENT *elementPtrs[MAX_ELEMENTS]; // *动态分配ELEMENT数组
-extern u8 elementCount; // *当前元素数量
 
 #endif

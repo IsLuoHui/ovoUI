@@ -5,8 +5,6 @@
 #include "font.h"
 
 u8 FrameBuffer[OLED_BUFFER_SIZE] = {0};
-ELEMENT *elementPtrs[MAX_ELEMENTS] = {0};
-u8 elementCount = 0;
 
 static u16 RAMCursor;
 
@@ -300,125 +298,76 @@ void OLED_Show_MixString(u8 x, u8 page, char *String, u8 *RAM, u8 draw)
     }
 }
 
-ELEMENT *OLED_Element_Create(int16_t x, int16_t y, u8 w, u8 h,OLED_MIX_MODE mix, u8 *data) {
-    if (elementCount >= MAX_ELEMENTS) return NULL; // 超出最大元素限制
+void OLED_Show_Element(ELEMENT ele) {
 
-    ELEMENT *ele = (ELEMENT *)malloc(sizeof(ELEMENT));
-    if (!ele) return NULL; // 分配失败
-
-    ele->x = x;
-    ele->y = y;
-    ele->w = (x + w > OLED_WIDTH) ? OLED_WIDTH - x : w;
-    ele->h = (y + h > OLED_HEIGHT_PIXEL) ? OLED_HEIGHT_PIXEL - y : h;
-    ele->mix = mix;
-    ele->data = data;
-
-    elementPtrs[elementCount++] = ele; // 存入指针数组
-    return ele;
-}
-
-void OLED_Element_Modify(ELEMENT *ele, int16_t x, int16_t y, u8 w, u8 h, OLED_MIX_MODE mix, u8 *data) {
-    if (!ele) return;
-    ele->x = x;
-    ele->y = y;
-    ele->w = (x + w > OLED_WIDTH) ? OLED_WIDTH - x : w;
-    ele->h = (y + h > OLED_HEIGHT_PIXEL) ? OLED_HEIGHT_PIXEL - y : h;
-    ele->mix = mix;
-    ele->data = data;
-}
-
-void OLED_Element_Remove(u8 index) {
-    if (index >= elementCount || !elementPtrs[index]) return;
-    free(elementPtrs[index]); // 释放内存
-    for (u8 i = index; i < elementCount - 1; i++) {
-        elementPtrs[i] = elementPtrs[i + 1]; // 移动指针
+#ifdef DEBUG
+    int16_t px = ele.x;
+    int16_t py = ele.y;
+    if (px < 0) {
+        px = -px;
+        OLED_Show_Char(0, 6, '-', FrameBuffer, 1);
     }
-    elementPtrs[elementCount - 1] = NULL;
-    elementCount--;
-}
-
-void OLED_Mix_Print() {
-    // TODO 将数组循环拆分到外部，数组大小和循环由用户控制
-    //memset(FrameBuffer, 0, 1024);
-    for (u8 n = 0; n < elementCount; n++) {
-        ELEMENT *e = elementPtrs[n];
-        if (!e) continue;
-
-        #ifdef DEBUG
-        int16_t px = e->x;
-        int16_t py = e->y;
-        if (px < 0) {
-            px = -px;
-            OLED_Show_Char(0, 6, '-', FrameBuffer, 1);
-        }
-        if (py < 0) {
-            py = -py;
-            OLED_Show_Char(0, 4, '-', FrameBuffer, 1);
-        }
-        OLED_Show_Num(8, 4, py, 3, FrameBuffer, 1);
-        OLED_Show_Num(8, 6, px, 3, FrameBuffer, 1);
-        #endif
-
-        //混合模式0x00不显示
-        if (e->mix == OLED_MIX_HIDE)continue;
-        //宽高为0不显示
-        if (e->w == 0 || e->h == 0)continue;
-        //完全超出不显示
-        if (e->x >= OLED_WIDTH || e->y >= OLED_HEIGHT_PIXEL || e->x + e->w <= 0 || e->y + e->h <= 0) continue;
-
-        int16_t x0 = e->x < 0 ? 0 : e->x;
-        int16_t x1 = (e->x + e->w > OLED_WIDTH) ? OLED_WIDTH : (e->x + e->w);
-
-        int16_t page_start;
-        u8 y_offset;
-        if (e->y >= 0) {
-            page_start = e->y / 8;
-            y_offset = e->y % 8;
-        } else {
-            int16_t abs_y = -e->y;
-            page_start = (e->y - 7) / 8; // 向下取整
-            y_offset = (8 - (abs_y % 8)) % 8;
-        }
-        // 计算需要显示的页数，确保像素全部显示
-        u8 page_cnt = (e->h + y_offset + 7) / 8;
-
-        for (int16_t col = x0; col < x1; col++) {
-            int16_t data_col = col - e->x;
-            u8 prev = 0;
-            for (u8 page = 0; page < page_cnt; page++) {
-                u8 data = 0;
-                int16_t data_idx = page * e->w + data_col;
-                if (data_col >= 0 && data_col < e->w && data_idx < e->w * ((e->h + 7) / 8))
-                    data = e->data[data_idx];
-
-                u8 out;
-                if (page == 0) {
-                    out = data << y_offset;
-                } else {
-                    out = (data << y_offset) | (prev >> (8 - y_offset));
-                }
-                prev = data;
-
-                int16_t fb_page = page_start + page;
-                if (col >= 0 && col < OLED_WIDTH && fb_page >= 0 && fb_page < OLED_HEIGHT_PIXEL / 8) {
-                    switch (e->mix)
-                    {
-                        case OLED_MIX_COVER:
-                            FrameBuffer[fb_page * OLED_WIDTH + col] = out;
-                            break;
-                        case OLED_MIX_OR:
-                            FrameBuffer[fb_page * OLED_WIDTH + col] |= out;
-                            break;
-                        case OLED_MIX_AND:
-                            FrameBuffer[fb_page * OLED_WIDTH + col] &= out;
-                            break;
-                        case OLED_MIX_XOR:
-                            FrameBuffer[fb_page * OLED_WIDTH + col] ^= out;
-                            break;
-                    }
+    if (py < 0) {
+        py = -py;
+        OLED_Show_Char(0, 4, '-', FrameBuffer, 1);
+    }
+    OLED_Show_Num(8, 4, py, 3, FrameBuffer, 1);
+    OLED_Show_Num(8, 6, px, 3, FrameBuffer, 1);
+#endif
+    
+    //混合模式0x00不显示
+    if (ele.mix == OLED_MIX_HIDE)return;
+    //宽高为0不显示
+    if (ele.w == 0 || ele.h == 0)return;
+    //完全超出不显示
+    if (ele.x >= OLED_WIDTH || ele.y >= OLED_HEIGHT_PIXEL || ele.x + ele.w <= 0 || ele.y + ele.h <= 0) return;
+    int16_t x0 = ele.x < 0 ? 0 : ele.x;
+    int16_t x1 = (ele.x + ele.w > OLED_WIDTH) ? OLED_WIDTH : (ele.x + ele.w);
+    int16_t page_start;
+    u8 y_offset;
+    if (ele.y >= 0) {
+        page_start = ele.y / 8;
+        y_offset = ele.y % 8;
+    } else {
+        int16_t abs_y = -ele.y;
+        page_start = (ele.y - 7) / 8; // 向下取整
+        y_offset = (8 - (abs_y % 8)) % 8;
+    }
+    // 计算需要显示的页数，确保像素全部显示
+    u8 page_cnt = (ele.h + y_offset + 7) / 8;
+    for (int16_t col = x0; col < x1; col++) {
+        int16_t data_col = col - ele.x;
+        u8 prev = 0;
+        for (u8 page = 0; page < page_cnt; page++) {
+            u8 data = 0;
+            int16_t data_idx = page * ele.w + data_col;
+            if (data_col >= 0 && data_col < ele.w && data_idx < ele.w * ((ele.h + 7) / 8))
+                data = ele.data[data_idx];
+            u8 out;
+            if (page == 0) {
+                out = data << y_offset;
+            } else {
+                out = (data << y_offset) | (prev >> (8 - y_offset));
+            }
+            prev = data;
+            int16_t fb_page = page_start + page;
+            if (col >= 0 && col < OLED_WIDTH && fb_page >= 0 && fb_page < OLED_HEIGHT_PIXEL / 8) {
+                switch (ele.mix)
+                {
+                    case OLED_MIX_COVER:
+                        FrameBuffer[fb_page * OLED_WIDTH + col] = out;
+                        break;
+                    case OLED_MIX_OR:
+                        FrameBuffer[fb_page * OLED_WIDTH + col] |= out;
+                        break;
+                    case OLED_MIX_AND:
+                        FrameBuffer[fb_page * OLED_WIDTH + col] &= out;
+                        break;
+                    case OLED_MIX_XOR:
+                        FrameBuffer[fb_page * OLED_WIDTH + col] ^= out;
+                        break;
                 }
             }
         }
     }
-    //OLED_RAM_Refresh(FrameBuffer);
 }

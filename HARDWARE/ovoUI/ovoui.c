@@ -1,18 +1,24 @@
 #include "ovoui.h"
 #include "font.h"
+#include "stdio.h"
 
+MENU menus[1];
+u8 option_num;
 
 void Setting(void) {
     
 }
 
 OPTION MainMenu[] = {
-    { {ICON48W+ICONSPACE, 0, ICON48W, ICON48H, OLED_MIX_XOR, (void*)0}, Setting },
-    { {0, 0, ICON48W, ICON48H, OLED_MIX_XOR, (void *)0}, Setting },
-    { {-(ICON48W+ICONSPACE), 0, ICON48W, ICON48H, OLED_MIX_XOR, (void*)0}, Setting },
+    { {0, 0, 0, 0, OLED_MIX_HIDE, (void*)0}, 0 },
+    { {0, 0, 0, 0, OLED_MIX_HIDE, (void*)0}, 0 },
+    { {0, 0, 0, 0, OLED_MIX_HIDE, (void*)0}, 0 },
+    { {0, 0, 0, 0, OLED_MIX_HIDE, (void*)0}, 0 },
 };
 
-void MenuInit(void){
-    elementCount = sizeof(MainMenu) / sizeof(MainMenu[0]);
-    for (u8 i = 0;i < elementCount;i++)elementPtrs[i] = &MainMenu[i].ele;
+void MainMenuInit(void) {
+    menus[0].opt = MainMenu;
+    menus[0].mode = MENU_SHOW_Horizontal;
+    menus[0].optnum = sizeof(MainMenu) / sizeof(MainMenu[0]);
+    menus[0].position = 40;
 }

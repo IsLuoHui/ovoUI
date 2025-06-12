@@ -1,16 +1,12 @@
 #include "tim.h"
 #include "ec11.h"
 #include "oled.h"
-#include "ovoui.h"
 #include "font.h"
 #include "math.h"
 
-u8 left = 0;
-u8 right = 0;
-
 float t = 0;
-int16_t GlobalX = 40;
-int16_t TargetX = 40;
+int16_t GlobalX = 0;
+int16_t TargetX = 0;
 int16_t animStartX; // 动画起点
 
 u8 cur_x = 40;
@@ -84,8 +80,9 @@ float easeOut(float t) {
 }
 
 void DrawShow(void) {
+    //TODO 菜单两端限制滑动
     if (GlobalX != TargetX) {
-        t += 0.004f;
+        t += 0.003f;
         if (t >= 1.0f) t = 1.0f;
         GlobalX = lerp(animStartX, TargetX, easeOut(t));
         if (t >= 1.0f) {
@@ -96,4 +93,9 @@ void DrawShow(void) {
     } else {
         animStartX = TargetX = GlobalX;
     }
+}
+
+void Position_Init(MENU menu) {
+    GlobalX = menu.position;
+    TargetX = menu.position;
 }
