@@ -51,7 +51,7 @@ void EC11_Init(void) {
     NVIC_InitTypeDef NVIC_InitStructure;
 	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;//抢占优先级1
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;; // 子优先级3
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1; // 子优先级3
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     

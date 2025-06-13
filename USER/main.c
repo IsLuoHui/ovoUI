@@ -10,10 +10,7 @@
 
 //#define DEBUG
 
-extern u8 cur_x1;
-extern u8 cur_y1;
-extern u8 cur_x2;
-extern u8 cur_y2;
+
 
 extern float xt;
 extern float yt;
@@ -57,11 +54,11 @@ int main(void)
 
         for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Show_Element(menus[screen].opt[i].ele);
 
-        OLED_Draw_FillRect(cur_x1, cur_y1, cur_x2, cur_y2, FrameBuffer, OLED_MIX_XOR);
-        OLED_Draw_Point(cur_x1, cur_y1, FrameBuffer, 2);
-        OLED_Draw_Point(cur_x1, cur_y2-1, FrameBuffer, 2);
-        OLED_Draw_Point(cur_x2-1, cur_y1, FrameBuffer, 2);
-        OLED_Draw_Point(cur_x2-1, cur_y2-1, FrameBuffer, 2);
+        OLED_Draw_FillRect(cursor.x1, cursor.y1, cursor.x2, cursor.y2, FrameBuffer, OLED_MIX_XOR);
+        OLED_Draw_Point(cursor.x1, cursor.y1, FrameBuffer, 2);
+        OLED_Draw_Point(cursor.x1, cursor.y2-1, FrameBuffer, 2);
+        OLED_Draw_Point(cursor.x2-1, cursor.y1, FrameBuffer, 2);
+        OLED_Draw_Point(cursor.x2-1, cursor.y2-1, FrameBuffer, 2);
 
         OLED_RAM_Refresh(FrameBuffer);
 

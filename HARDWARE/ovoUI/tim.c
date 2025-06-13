@@ -14,18 +14,22 @@ int16_t GlobalY = 0;
 int16_t TargetX = 0;
 int16_t TargetY = 0;
 
-int16_t LeftEnd = 0;
-int16_t RightEnd = 0;
-int16_t animStartX; // 缓动计算起点
+// 缓动计算起点
+int16_t animStartX;
 int16_t animStartY;
 
-u8 cur_x1 = CURX;
-u8 cur_y1 = CURY;
-u8 cur_x2 = CURX + CURW;
-u8 cur_y2 = CURY + CURH;
+int16_t LeftEnd = 0;
+int16_t RightEnd = 0;
+
+CURSOR cursor = {40, 64, 40+ICON48W, 64+ICON48H};
+
+
 
 extern u8 keydown;
 
+static inline int lerp(int start, int end, float t) {
+    return start + (int)((end - start) * t);
+}
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
@@ -89,6 +93,7 @@ void TIM3_IRQHandler(void)
                 if (menus[screen].opt[choice].action) {
                     animStartY = menus[screen].opt[0].ele.y;
                     TargetY = 64;
+                    yt = 0;
                     menus[screen].opt[choice].action();
 
                 }
@@ -104,12 +109,8 @@ void TIM3_IRQHandler(void)
     }
 }
 
-int lerp(int start, int end, float t) {
-    return start + (int)((end - start) * t);
-}
-float easeOut(float t) {
-    return t * (2 - t);
-}
+
+
 
 void DrawShow(void) {
     //TODO 根据显示模式绘制
@@ -118,10 +119,11 @@ void DrawShow(void) {
     //if (menus[screen].opt[0].ele.y == 8) {    }
 
     if (GlobalX != TargetX) {
-        cur_x1 = lerp(CURX - 4, CURX, Gxt);
-        cur_x2 = lerp(CURX + CURW + 4, CURX + CURW, Gxt);
-        cur_y1 = lerp(CURY + 4, CURY, Gxt);
-        cur_y2 = lerp(CURY + CURH - 4, CURY + CURH, Gxt);
+        
+        cursor.x1 = lerp(CURX - 4, CURX, Gxt);
+        cursor.x2 = lerp(CURX + CURW + 4, CURX + CURW, Gxt);
+        cursor.y1 = lerp(CURY + 4, CURY, Gxt);
+        cursor.y2 = lerp(CURY + CURH - 4, CURY + CURH, Gxt);
     }
     // *边缘限制
     if (GlobalX > LeftEnd + ICON48W / 2) {
@@ -151,7 +153,11 @@ void DrawShow(void) {
     if (GlobalY != TargetY) {
         yt += 0.003f;
         if (yt >= 1.0f) yt = 1.0f;
-        GlobalY = lerp(animStartY, TargetY,  EASE_OUT(yt));
+        GlobalY = lerp(animStartY, TargetY, EASE_OUT(yt));
+        cursor.y1 = GlobalY;
+        cursor.y2 = GlobalY + CURH;
+
+        
         if (yt >= 1.0f) {
             GlobalY = TargetY;
             animStartY = TargetY;
@@ -161,14 +167,10 @@ void DrawShow(void) {
 }
 
 void Position_Init(MENU menu) {
-    cur_x1 = CURX;
-    cur_y1 = CURY;
-    cur_x2 = CURX + CURW;
-    cur_y2 = CURY + CURH;
 
     GlobalX = menu.position;
     TargetX = menu.position;
-    GlobalY = animStartY = 64;
+    GlobalY = animStartY = OLED_HEIGHT_PIXEL;
     TargetY = 8;
     LeftEnd = menu.leftend;
     RightEnd = LeftEnd-(ICON48W+ICONSPACE)*(menu.optnum-1);

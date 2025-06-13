@@ -23,12 +23,14 @@ typedef struct
     int16_t position; //显示位置，用于记录上次选中
 }MENU;
 
+typedef struct {
+    u8 x1,y1,x2,y2;
+}CURSOR;
+
 #define ICONSPACE 16
 
 void _Main(void);
-void Main_(void);
 void _Model(void);
-void Model_(void);
 
 extern MENU menus[];
 extern OPTION MainMenu[];
