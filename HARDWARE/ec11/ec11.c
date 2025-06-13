@@ -3,6 +3,7 @@
 
 u8 Ec11Trigger=0x00;
 
+u8 keydown = 0;
 static u8 EC11_AL;
 
 void EC11_Init(void) {
@@ -91,9 +92,18 @@ u8 EC11_Scan(void) {
 
 void TIM4_IRQHandler(void)
 { 	
-	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//是更新中断
+	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//更新中断
     {
         Ec11Trigger |= EC11_Scan();
+        if (!Ec11Trigger&0x01&&keydown) {
+            keydown = 0;
+        }
+        if (keydown) {
+            Ec11Trigger &= ~0x01;
+        }
+        if ((Ec11Trigger & 0x01) && !keydown) {
+            keydown = 1;
+        }
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
 	}
 }

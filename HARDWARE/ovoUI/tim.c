@@ -5,6 +5,7 @@
 #include "math.h"
 
 float t = 0;
+
 float gt = 0;
 int16_t GlobalX = 0;
 int16_t TargetX = 0;
@@ -16,6 +17,8 @@ u8 cur_x1 = CURX;
 u8 cur_y1 = CURY;
 u8 cur_x2 = CURX + CURW;
 u8 cur_y2 = CURY + CURH;
+
+extern u8 keydown;
 
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -49,12 +52,14 @@ void TIM3_IRQHandler(void)
         u8 choice = 0;
         switch (Ec11Trigger) {
             case EC11TURNRIGTH:
+                if(keydown)break;
                 animStartX = GlobalX;
                 TargetX += (ICONSPACE + ICON48W);
                 t = 0;
                 Ec11Trigger = 0;
                 break;
             case EC11TURNLEFT:
+                if(keydown)break;
                 animStartX = GlobalX;
                 TargetX -= (ICONSPACE + ICON48W);
                 t = 0;
@@ -64,16 +69,15 @@ void TIM3_IRQHandler(void)
                 // TODO 转场动画 & 防止连击
                 if (GlobalX != TargetX)break;
                 choice = (LeftEnd - GlobalX) / (ICONSPACE + ICON48W);
-                if (menus[screen].opt[choice].action)menus[screen].opt[choice].action();
+                if (menus[screen].opt[choice].action) {
+                    menus[screen].opt[choice].action();
+                }
                 Ec11Trigger = 0;
                 break;
             default:
                 Ec11Trigger = 0;
                 break;
         }
-
-        if (Ec11Trigger) LED_ON;
-        else LED_OFF;
 
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
         DrawShow();
@@ -103,17 +107,14 @@ void DrawShow(void) {
     //    cur_y1 = CURY;
     //    cur_y2 = CURY + CURH;
     //}
+    
+    //if (menus[screen].opt[0].ele.y == 8) {    }
+
     if (GlobalX != TargetX) {
         cur_x1 = lerp(CURX - 4, CURX, gt);
         cur_x2 = lerp(CURX + CURW + 4, CURX + CURW, gt);
         cur_y1 = lerp(CURY + 4, CURY, gt);
         cur_y2 = lerp(CURY + CURH - 4, CURY + CURH, gt);
-    }
-    if(GlobalX == TargetX&&cur_x1!=CURX) {
-        cur_x1 = lerp(CURX, CURX - 4, gt);
-        cur_x2 = lerp(CURX + CURW, CURX + CURW + 4, gt);
-        cur_y1 = lerp(CURY, CURY + 4, gt);
-        cur_y2 = lerp(CURY + CURH, CURY + CURH - 4, gt);
     }
     // *边缘限制
     if (GlobalX > LeftEnd + ICON48W / 2) {

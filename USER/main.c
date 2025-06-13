@@ -17,7 +17,9 @@ extern u8 cur_y1;
 extern u8 cur_x2;
 extern u8 cur_y2;
 
+extern float t;
 
+extern u8 keydown;
 
 int main(void)
 {
@@ -28,7 +30,7 @@ int main(void)
     EC11_Init();
     TIM3_Init();
 
-    _Main_IN();
+    _Main();
 
     while (1)
 	{
@@ -43,17 +45,13 @@ int main(void)
 
         #ifdef DEBUG
         int16_t gx = GlobalX;
-        int16_t tx = TargetX;
         if (gx < 0) {
             gx = -gx;
             OLED_Show_Char(0, 0, '-', FrameBuffer, 1);
         }
-        if (tx < 0) {
-            tx = -tx;
-            OLED_Show_Char(0, 6, '-', FrameBuffer, 1);
-        }
         OLED_Show_Num(8, 0, gx, 5, FrameBuffer, 1);
-        OLED_Show_Num(8, 6, tx, 5, FrameBuffer, 1);
+        OLED_Show_Num(0, 4, keydown, 1, FrameBuffer, 1);
+        OLED_Show_Num(0, 6, (u16)(t * 1000), 4, FrameBuffer, 1);
         #endif
 
         for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Show_Element(menus[screen].opt[i].ele);

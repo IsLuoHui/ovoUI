@@ -5,9 +5,8 @@
 
 u8 screen = 0;
 
-
 // TODO 记忆选项
-void _Main_IN(void) {
+void _Main(void) {
     for (u8 i = 0;i < menus[0].optnum;i++) {
         menus[0].opt[i].ele.y = 8;
         menus[0].opt[i].ele.w = ICON48W;
@@ -19,7 +18,7 @@ void _Main_IN(void) {
     Position_Init(menus[0]);
 }
 
-void _Model_IN(void) {
+void _Model(void) {
     for (u8 i = 0;i < menus[1].optnum;i++) {
         menus[1].opt[i].ele.y = 8;
         menus[1].opt[i].ele.w = ICON48W;
@@ -32,14 +31,14 @@ void _Model_IN(void) {
 }
 
 OPTION MainMenu[] = {
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[1]}, 0 },
+    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[1]}, _Model },
     { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[2]}, 0 },
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[3]}, _Model_IN },
+    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[3]}, 0 },
 };
 
 OPTION ModelMenu[] = {
     { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[0]}, 0 },
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[4]}, _Main_IN },
+    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[4]}, _Main },
 };
 
 
