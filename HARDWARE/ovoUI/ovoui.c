@@ -5,6 +5,8 @@
 
 u8 screen = 0;
 
+extern float at;
+
 // TODO 记忆选项
 void _Main(void) {
     for (u8 i = 0;i < menus[0].optnum;i++) {

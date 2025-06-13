@@ -3,15 +3,21 @@
 #include "oled.h"
 #include "font.h"
 #include "math.h"
+#include "delay.h"
 
-float t = 0;
+float xt = 0;
+float yt = 0;
+float Gxt = 0;
 
-float gt = 0;
 int16_t GlobalX = 0;
+int16_t GlobalY = 0;
 int16_t TargetX = 0;
+int16_t TargetY = 0;
+
 int16_t LeftEnd = 0;
 int16_t RightEnd = 0;
 int16_t animStartX; // 缓动计算起点
+int16_t animStartY;
 
 u8 cur_x1 = CURX;
 u8 cur_y1 = CURY;
@@ -46,6 +52,9 @@ void TIM3_Init(void) {
     LED_OFF;
 }
 
+
+
+
 void TIM3_IRQHandler(void)
 { 	
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
@@ -55,30 +64,41 @@ void TIM3_IRQHandler(void)
                 if(keydown)break;
                 animStartX = GlobalX;
                 TargetX += (ICONSPACE + ICON48W);
-                t = 0;
-                Ec11Trigger = 0;
+                xt = 0;
+
+
+
+
+
                 break;
             case EC11TURNLEFT:
+                // MenuOut();
                 if(keydown)break;
                 animStartX = GlobalX;
                 TargetX -= (ICONSPACE + ICON48W);
-                t = 0;
-                Ec11Trigger = 0;
+                xt = 0;
+
+
+
+
                 break;
             case EC11BUTTON:
-                // TODO 转场动画 & 防止连击
-                if (GlobalX != TargetX)break;
+                // TODO 转场动画完善
+                if (GlobalX < TargetX - ICON48W/2 && GlobalX > TargetX + ICON48W/2)break;
                 choice = (LeftEnd - GlobalX) / (ICONSPACE + ICON48W);
                 if (menus[screen].opt[choice].action) {
+                    animStartY = menus[screen].opt[0].ele.y;
+                    TargetY = 64;
                     menus[screen].opt[choice].action();
+
                 }
-                Ec11Trigger = 0;
-                break;
-            default:
-                Ec11Trigger = 0;
+                
+                
+                
+                
                 break;
         }
-
+        Ec11Trigger = 0;
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
         DrawShow();
     }
@@ -95,26 +115,13 @@ void DrawShow(void) {
     //TODO 根据显示模式绘制
 
     //TODO 光标动效优化
-    //if (GlobalX != TargetX) {
-    //    cur_x1 = CURX - 4;
-    //    cur_x2 = CURX + CURW + 4;
-    //    cur_y1 = CURY + 4;
-    //    cur_y2 = CURY + CURH - 4;
-    //}
-    //else {
-    //    cur_x1 = CURX;
-    //    cur_x2 = CURX + CURW;
-    //    cur_y1 = CURY;
-    //    cur_y2 = CURY + CURH;
-    //}
-    
     //if (menus[screen].opt[0].ele.y == 8) {    }
 
     if (GlobalX != TargetX) {
-        cur_x1 = lerp(CURX - 4, CURX, gt);
-        cur_x2 = lerp(CURX + CURW + 4, CURX + CURW, gt);
-        cur_y1 = lerp(CURY + 4, CURY, gt);
-        cur_y2 = lerp(CURY + CURH - 4, CURY + CURH, gt);
+        cur_x1 = lerp(CURX - 4, CURX, Gxt);
+        cur_x2 = lerp(CURX + CURW + 4, CURX + CURW, Gxt);
+        cur_y1 = lerp(CURY + 4, CURY, Gxt);
+        cur_y2 = lerp(CURY + CURH - 4, CURY + CURH, Gxt);
     }
     // *边缘限制
     if (GlobalX > LeftEnd + ICON48W / 2) {
@@ -125,26 +132,44 @@ void DrawShow(void) {
         animStartX = GlobalX;
         TargetX = RightEnd;
     }
-    // *缓动
+    // *X缓动
     if (GlobalX != TargetX) {
-        t += 0.003f;
-        if (t >= 1.0f) t = 1.0f;
-        gt = EASE_OUT(t);
-        GlobalX = lerp(animStartX, TargetX, gt);
-        if (t >= 1.0f) {
+        xt += 0.003f;
+        if (xt >= 1.0f) xt = 1.0f;
+        Gxt = EASE_OUT(xt);
+        GlobalX = lerp(animStartX, TargetX, Gxt);
+        if (xt >= 1.0f) {
             GlobalX = TargetX;
             animStartX = TargetX;
-            t = 0;
-            gt = 0;
+            xt = 0;
+            Gxt = 0;
         }
     } else {
         animStartX = TargetX = GlobalX;
     }
+    // *Y缓动
+    if (GlobalY != TargetY) {
+        yt += 0.003f;
+        if (yt >= 1.0f) yt = 1.0f;
+        GlobalY = lerp(animStartY, TargetY,  EASE_OUT(yt));
+        if (yt >= 1.0f) {
+            GlobalY = TargetY;
+            animStartY = TargetY;
+            yt = 0;
+        }
+    }
 }
 
 void Position_Init(MENU menu) {
+    cur_x1 = CURX;
+    cur_y1 = CURY;
+    cur_x2 = CURX + CURW;
+    cur_y2 = CURY + CURH;
+
     GlobalX = menu.position;
     TargetX = menu.position;
+    GlobalY = animStartY = 64;
+    TargetY = 8;
     LeftEnd = menu.leftend;
     RightEnd = LeftEnd-(ICON48W+ICONSPACE)*(menu.optnum-1);
 }

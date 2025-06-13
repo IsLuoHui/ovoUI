@@ -19,5 +19,7 @@ void DrawShow(void);
 void Position_Init(MENU menu);
 
 extern int16_t GlobalX;
+extern int16_t GlobalY;
+
 
 #endif

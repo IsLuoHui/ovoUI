@@ -8,16 +8,15 @@
 #include "ovoui.h"
 #include "tim.h"
 
-#define DEBUG
-
-extern int16_t TargetX;
+//#define DEBUG
 
 extern u8 cur_x1;
 extern u8 cur_y1;
 extern u8 cur_x2;
 extern u8 cur_y2;
 
-extern float t;
+extern float xt;
+extern float yt;
 
 extern u8 keydown;
 
@@ -36,6 +35,7 @@ int main(void)
 	{
         for (u8 i = 0;i < menus[screen].optnum;i++){
             menus[screen].opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
+            menus[screen].opt[i].ele.y = GlobalY;
         }
 
 
@@ -50,8 +50,9 @@ int main(void)
             OLED_Show_Char(0, 0, '-', FrameBuffer, 1);
         }
         OLED_Show_Num(8, 0, gx, 5, FrameBuffer, 1);
-        OLED_Show_Num(0, 4, keydown, 1, FrameBuffer, 1);
-        OLED_Show_Num(0, 6, (u16)(t * 1000), 4, FrameBuffer, 1);
+        OLED_Show_Num(0, 2, keydown, 1, FrameBuffer, 1);
+        OLED_Show_Num(0, 4, (u16)(yt * 1000), 4, FrameBuffer, 1);
+        OLED_Show_Num(0, 6, (u16)(xt * 1000), 4, FrameBuffer, 1);
         #endif
 
         for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Show_Element(menus[screen].opt[i].ele);
