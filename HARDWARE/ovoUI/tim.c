@@ -46,6 +46,7 @@ void TIM3_Init(void) {
 void TIM3_IRQHandler(void)
 { 	
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
+        u8 choice = 0;
         switch (Ec11Trigger) {
             case EC11TURNRIGTH:
                 animStartX = GlobalX;
@@ -60,6 +61,10 @@ void TIM3_IRQHandler(void)
                 Ec11Trigger = 0;
                 break;
             case EC11BUTTON:
+                // TODO 转场动画 & 防止连击
+                if (GlobalX != TargetX)break;
+                choice = (LeftEnd - GlobalX) / (ICONSPACE + ICON48W);
+                if (menus[screen].opt[choice].action)menus[screen].opt[choice].action();
                 Ec11Trigger = 0;
                 break;
             default:
@@ -84,6 +89,7 @@ float easeOut(float t) {
 
 void DrawShow(void) {
     //TODO 根据显示模式绘制
+
     //TODO 光标动效优化
     //if (GlobalX != TargetX) {
     //    cur_x1 = CURX - 4;
@@ -109,7 +115,7 @@ void DrawShow(void) {
         cur_y1 = lerp(CURY, CURY + 4, gt);
         cur_y2 = lerp(CURY + CURH, CURY + CURH - 4, gt);
     }
-
+    // *边缘限制
     if (GlobalX > LeftEnd + ICON48W / 2) {
         animStartX = GlobalX;
         TargetX = LeftEnd;
@@ -118,7 +124,7 @@ void DrawShow(void) {
         animStartX = GlobalX;
         TargetX = RightEnd;
     }
-
+    // *缓动
     if (GlobalX != TargetX) {
         t += 0.003f;
         if (t >= 1.0f) t = 1.0f;

@@ -26,7 +26,11 @@ typedef struct
 
 #define ICONSPACE 24
 
+void _Main_IN(void);
+void _Model_IN(void);
+
 extern MENU menus[];
 extern OPTION MainMenu[];
+extern u8 screen;
 
 #endif

@@ -8,16 +8,16 @@
 #include "ovoui.h"
 #include "tim.h"
 
-//#define DEBUG
+#define DEBUG
 
-extern u8 left;
-extern u8 right;
 extern int16_t TargetX;
 
 extern u8 cur_x1;
 extern u8 cur_y1;
 extern u8 cur_x2;
 extern u8 cur_y2;
+
+
 
 int main(void)
 {
@@ -28,19 +28,12 @@ int main(void)
     EC11_Init();
     TIM3_Init();
 
-    for (u8 i = 0;i < menus[0].optnum;i++) {
-        menus[0].opt[i].ele.y = 8;
-        menus[0].opt[i].ele.w = ICON48W;
-        menus[0].opt[i].ele.h = ICON48H;
-        menus[0].opt[i].ele.mix = OLED_MIX_XOR;
-        menus[0].opt[i].ele.data = (u8 *)ICON_48X48[i];
-    }
-    Position_Init(menus[0]);
+    _Main_IN();
 
     while (1)
 	{
-        for (u8 i = 0;i < menus[0].optnum;i++){
-            menus[0].opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
+        for (u8 i = 0;i < menus[screen].optnum;i++){
+            menus[screen].opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
         }
 
 
@@ -63,7 +56,7 @@ int main(void)
         OLED_Show_Num(8, 6, tx, 5, FrameBuffer, 1);
         #endif
 
-        for (u8 i = 0;i < menus[0].optnum;i++)OLED_Show_Element(menus[0].opt[i].ele);
+        for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Show_Element(menus[screen].opt[i].ele);
 
         OLED_Draw_FillRect(cur_x1, cur_y1, cur_x2, cur_y2, FrameBuffer, OLED_MIX_XOR);
         OLED_Draw_Point(cur_x1, cur_y1, FrameBuffer, 2);
