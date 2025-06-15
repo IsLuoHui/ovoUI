@@ -10,7 +10,7 @@ extern float at;
 // TODO 记忆选项
 void _Main(void) {
     for (u8 i = 0;i < menus[0].optnum;i++) {
-        menus[0].opt[i].ele.y = 8;
+        menus[0].opt[i].ele.y = 0;
         menus[0].opt[i].ele.w = ICON48W;
         menus[0].opt[i].ele.h = ICON48H;
         menus[0].opt[i].ele.mix = OLED_MIX_XOR;
@@ -22,7 +22,7 @@ void _Main(void) {
 
 void _Model(void) {
     for (u8 i = 0;i < menus[1].optnum;i++) {
-        menus[1].opt[i].ele.y = 8;
+        menus[1].opt[i].ele.y = 0;
         menus[1].opt[i].ele.w = ICON48W;
         menus[1].opt[i].ele.h = ICON48H;
         menus[1].opt[i].ele.mix = OLED_MIX_XOR;

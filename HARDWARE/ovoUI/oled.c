@@ -299,21 +299,6 @@ void OLED_Show_MixString(u8 x, u8 page, char *String, u8 *RAM, u8 draw)
 }
 
 void OLED_Show_Element(ELEMENT ele) {
-
-#ifdef DEBUG
-    int16_t px = ele.x;
-    int16_t py = ele.y;
-    if (px < 0) {
-        px = -px;
-        OLED_Show_Char(0, 6, '-', FrameBuffer, 1);
-    }
-    if (py < 0) {
-        py = -py;
-        OLED_Show_Char(0, 4, '-', FrameBuffer, 1);
-    }
-    OLED_Show_Num(8, 4, py, 3, FrameBuffer, 1);
-    OLED_Show_Num(8, 6, px, 3, FrameBuffer, 1);
-#endif
     
     //混合模式0x00不显示
     if (ele.mix == OLED_MIX_HIDE)return;
@@ -369,5 +354,29 @@ void OLED_Show_Element(ELEMENT ele) {
                 }
             }
         }
+    }
+}
+
+void OLED_Show_Char_At(int16_t x, int16_t y, char c, OLED_MIX_MODE draw_mode) {
+    u8 buffer[16];
+    memcpy(buffer, ASCII_8X16[c - ' '], 16);
+
+    ELEMENT ch = {
+        .x = x,
+        .y = y,
+        .w = 8,
+        .h = 16,
+        .data = buffer,
+        .mix = draw_mode
+    };
+
+    OLED_Show_Element(ch);
+}
+
+void OLED_Show_EString(int16_t x, int16_t y,char *str, OLED_MIX_MODE draw_mode) {
+    while (*str) {
+        if (x > OLED_WIDTH - 8) break; // 超出宽度限制
+        OLED_Show_Char_At(x, y, *str++, draw_mode);
+        x += 8;  // 每个字符宽度为 8
     }
 }

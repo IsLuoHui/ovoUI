@@ -171,7 +171,7 @@ void Position_Init(MENU menu) {
     GlobalX = menu.position;
     TargetX = menu.position;
     GlobalY = animStartY = OLED_HEIGHT_PIXEL;
-    TargetY = 8;
+    TargetY = 0;
     LeftEnd = menu.leftend;
     RightEnd = LeftEnd-(ICON48W+ICONSPACE)*(menu.optnum-1);
 }

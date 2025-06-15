@@ -60,4 +60,8 @@ void OLED_Show_MixString(u8 x, u8 page, char *String, u8 * RAM, u8 draw);
 void OLED_Show_Element(ELEMENT ele);
 extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
 
+void OLED_Show_Char_At(int16_t x, int16_t y, char c, OLED_MIX_MODE draw_mode);
+void OLED_Show_EString(int16_t x, int16_t y, char *str, OLED_MIX_MODE draw_mode);
+
+
 #endif
