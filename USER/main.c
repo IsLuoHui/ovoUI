@@ -55,10 +55,14 @@ int main(void)
         for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Show_Element(menus[screen].opt[i].ele);
 
         OLED_Draw_FillRect(cursor.x1, cursor.y1, cursor.x2, cursor.y2, FrameBuffer, OLED_MIX_XOR);
-        OLED_Draw_Point(cursor.x1, cursor.y1, FrameBuffer, 2);
-        OLED_Draw_Point(cursor.x1, cursor.y2-1, FrameBuffer, 2);
-        OLED_Draw_Point(cursor.x2-1, cursor.y1, FrameBuffer, 2);
-        OLED_Draw_Point(cursor.x2-1, cursor.y2-1, FrameBuffer, 2);
+        //OLED_Draw_Point(cursor.x1, cursor.y1, FrameBuffer, 0);
+        //OLED_Draw_Point(cursor.x1, cursor.y2-1, FrameBuffer, 0);
+        //OLED_Draw_Point(cursor.x2-1, cursor.y1, FrameBuffer, 0);
+        //OLED_Draw_Point(cursor.x2-1, cursor.y2-1, FrameBuffer, 0);
+
+        //OLED_Draw_FillRect(0, 0, 128, 8, FrameBuffer, OLED_MIX_XOR);
+        //OLED_Draw_FillRect(0, 56, 128, 64, FrameBuffer, OLED_MIX_XOR);
+        //OLED_Show_String(0, 0, "OLED_Demo", FrameBuffer, 0);
 
         OLED_RAM_Refresh(FrameBuffer);
 

@@ -85,8 +85,8 @@ void OLED_Init(void) {
     OLED_W_CMD(0x3f);//--1/64 duty
     OLED_W_CMD(0xD3);//-set display offset	Shift Mapping RAM Counter (0x00~0x3F)
     OLED_W_CMD(0x00);//-not offset
-    OLED_W_CMD(0xd5);//--set display clock divide ratio/oscillator frequency
-    OLED_W_CMD(0x80);//--set divide ratio, Set Clock as 100 Frames/Sec
+    OLED_W_CMD(0xD5);//--set display clock divide ratio/oscillator frequency
+    OLED_W_CMD(0xC0);//--set divide ratio, Set Clock as 100 Frames/Sec
     OLED_W_CMD(0xD9);//--set pre-charge period
     OLED_W_CMD(0xF1);//Set Pre-Charge as 15 Clocks & Discharge as 1 Clock
     OLED_W_CMD(0xDA);//--set com pins hardware configuration
