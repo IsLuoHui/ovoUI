@@ -9,8 +9,6 @@
         "C_Cpp.default.configurationProvider": "cl.eide",
         "C_Cpp.errorSquiggles": "disabled",
         "files.associations": {
-            "manifest.json": "jsonc",
-            "pags.json": "jsonc",
             ".eideignore": "ignore",
             "*.a51": "a51",
             "*.h": "c",
@@ -35,7 +33,8 @@
             "regex": "c",
             "array": "c",
             "cmath": "c",
-            "complex": "c"
+            "complex": "c",
+            "random": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

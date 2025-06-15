@@ -6,98 +6,107 @@
 
 u8 FrameBuffer[OLED_BUFFER_SIZE] = {0};
 
-static u16 RAMCursor;
-
-void OLED_RAM_Refresh(u8 *RAM) {
+void OLED_BUFFER_Refresh(void) {
     u8 x, y;
-    RAMCursor = 0;
+    u16 cur = 0;
     for (y = 0;y < 8;y++)
     {
         OLED_Set_Cursor(0, y);
         for (x = 0;x < 128;x++) {
-            OLED_W_DATA(RAM[RAMCursor++]);
+            OLED_W_DATA(FrameBuffer[cur++]);
         }
     }
 }
 
-void OLED_RAM_Clear(u8 *RAM) {
-    memset(RAM, 0, OLED_BUFFER_SIZE);
+void OLED_BUFFER_Clear(void) {
+    memset(FrameBuffer, 0, OLED_BUFFER_SIZE);
 }
 
-void OLED_RAM_Fill(u8 *RAM) {
-    for(RAMCursor=0;RAMCursor<OLED_BUFFER_SIZE;RAMCursor++)RAM[RAMCursor]=0xFF;
+void OLED_BUFFER_Fill(void) {
+    for(u16 cur=0;cur<OLED_BUFFER_SIZE;cur++)FrameBuffer[cur]=0xFF;
 }
 
-void OLED_Draw_Point(u8 x, u8 y, u8 *RAM, u8 draw) {
-    if (x > OLED_WIDTH - 1 || y > OLED_HEIGHT_PAGE * 8 - 1)return;
-    switch(draw){
-        case 0:
-            RAM[y/8*128+x]&=~(0x01<<(y%8));
+void OLED_Draw_Point(u8 x, u8 y, OLED_MIX_MODE mix) {
+    if (x >= OLED_WIDTH || y >= OLED_HEIGHT_PIXEL) return;
+    u16 cur = (y >> 3) * 128 + x;
+    u8 bitmask = 0x01 << (y & 0x07);
+    switch (mix) {
+        case OLED_MIX_COVER:
+            FrameBuffer[cur] |= bitmask;
+        case OLED_MIX_OR:
+            FrameBuffer[cur] |= bitmask;
             break;
-        case 1:
-            RAM[y/8*128+x]|=0x01<<(y%8);
+        case OLED_MIX_XOR:
+            FrameBuffer[cur] ^= bitmask;
             break;
-        case 2:
-            if(RAM[y/8*128+x]>>(y%8)&0x01)RAM[y/8*128+x]&=~(0x01<<(y%8));
-            else RAM[y/8*128+x]|=0x01<<(y%8);
+        default:
             break;
     }
 }
 
-void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
-    u8 dx =abs(x1-x0), dy =abs(y1-y0);
-    char sx =x0<x1?1:-1, sy =y0<y1?1:-1; 
-    short err =(dx>dy?dx:-dy)/2, e2;
-    while(1){
-        OLED_Draw_Point(x0, y0, RAM, draw);
-        if(x0==x1&&y0==y1) break;
-        e2=err;
-        if(e2>-dx){
-            err-=dy;
-            x0+=sx;
+void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix) {
+    u8 dx = x1 > x0 ? x1 - x0 : x0 - x1;
+    u8 dy = y1 > y0 ? y1 - y0 : y0 - y1;
+    int8_t sx = x0 < x1 ? 1 : -1;
+    int8_t sy = y0 < y1 ? 1 : -1;
+    int16_t err = dx - dy;
+
+    while (1) {
+        OLED_Draw_Point(x0, y0, mix);
+
+        if (x0 == x1 && y0 == y1) break;
+
+        int8_t e2 = err << 1;
+        if (e2 > -dy) {
+            err -= dy;
+            x0 += sx;
         }
-        if(e2<dy){
-            err+=dx;
-            y0+=sy;
+        if (e2 < dx) {
+            err += dx;
+            y0 += sy;
         }
     }
 }
 
-void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 draw) {
-    u8 dx = abs(x1 - x0), dy = abs(y1 - y0);
-    int8_t sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;;
-    int16_t err = (dx > dy ? dx : -dy) / 2, e2;
-    u8 count =0;
-    
-    while(1){
-        //间隔与线端等长
-        if(count<dashlen)OLED_Draw_Point(x0, y0, RAM, draw);
-        count =(count+1)%(2*dashlen);
-        //间隔画点
-        //if(count%dashlen==0)OLED_DrawPoint(x0, y0, RAM, draw);
-        //count++;
-        
-        if(x0==x1&&y0==y1) break;
-        e2=err;
-        if(e2>-dx){
-            err-=dy;
-            x0+=sx;
-        }
-        if(e2<dy){
-            err+=dx;
-            y0+=sy;
-        }
+void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, OLED_MIX_MODE mix) {
+    u8 dx = x1 > x0 ? x1 - x0 : x0 - x1;
+    u8 dy = y1 > y0 ? y1 - y0 : y0 - y1;
+    int8_t sx = x0 < x1 ? 1 : -1;
+    int8_t sy = y0 < y1 ? 1 : -1;
+    int8_t err = dx - dy;
+    u8 count = 0, pattern_len = dashlen << 1;
+
+    while (1) {
+        if ((count % pattern_len) < dashlen)
+            OLED_Draw_Point(x0, y0, mix);
+
+        if (x0 == x1 && y0 == y1) break;
+
+        int8_t e2 = err << 1;
+        if (e2 > -dy) { err -= dy; x0 += sx; }
+        if (e2 < dx)  { err += dx; y0 += sy; }
+
+        count++;
     }
 }
 
-void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw) {
-    OLED_Draw_Line(x0, y0, x1, y0, RAM, draw);
-    OLED_Draw_Line(x1, y0, x1, y1, RAM, draw);
-    OLED_Draw_Line(x1, y1, x0, y1, RAM, draw);
-    OLED_Draw_Line(x0, y1, x0, y0, RAM, draw);
+void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix) {
+    if (x0 > x1) { u8 tmp = x0; x0 = x1; x1 = tmp; }
+    if (y0 > y1) { u8 tmp = y0; y0 = y1; y1 = tmp; }
+
+    // y
+    for (u8 x = x0; x <= x1; x++) {
+        OLED_Draw_Point(x, y0, mix);
+        OLED_Draw_Point(x, y1, mix);
+    }
+    // x
+    for (u8 y = y0 + 1; y < y1; y++) {
+        OLED_Draw_Point(x0, y, mix);
+        OLED_Draw_Point(x1, y, mix);
+    }
 }
 
-void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, OLED_MIX_MODE mix) {
+void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix) {
     if (mix == OLED_MIX_HIDE)return;
     if (x0 > x1) { u8 t = x0; x0 = x1; x1 = t; }
     if (y0 > y1) { u8 t = y0; y0 = y1; y1 = t; }
@@ -117,16 +126,16 @@ void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, OLED_MIX_MODE mix) 
             u16 idx = page * OLED_WIDTH + x;
             switch (mix) {
                 case OLED_MIX_COVER:
-                    RAM[idx] = (RAM[idx] & ~mask) | mask;
+                    FrameBuffer[idx] = (FrameBuffer[idx] & ~mask) | mask;
                     break;
                 case OLED_MIX_OR:
-                    RAM[idx] |= mask;
+                    FrameBuffer[idx] |= mask;
                     break;
                 case OLED_MIX_AND:
-                    RAM[idx] &= mask;
+                    FrameBuffer[idx] &= mask;
                     break;
                 case OLED_MIX_XOR:
-                    RAM[idx] ^= mask;
+                    FrameBuffer[idx] ^= mask;
                     break;
                 default:
                     break;

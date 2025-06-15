@@ -6,12 +6,10 @@
 #define OLED_WIDTH 128 //col byte
 #define OLED_HEIGHT_PAGE 8   //page
 
-#define OLED_HEIGHT_PIXEL (OLED_HEIGHT_PAGE*8) //page
-#define OLED_BUFFER_SIZE (OLED_WIDTH * OLED_HEIGHT_PAGE)
+#define OLED_HEIGHT_PIXEL (OLED_HEIGHT_PAGE*8) //pixel
+#define OLED_BUFFER_SIZE (OLED_WIDTH * OLED_HEIGHT_PAGE) //byte
 
-#define MAX_ELEMENTS 20 // 最大元素数量
-
-//元素混合方式
+// *混合方式
 typedef enum {
     OLED_MIX_HIDE   = 0x00,   // 隐藏
     OLED_MIX_COVER  = 0x01,   // 覆盖=
@@ -21,7 +19,7 @@ typedef enum {
 } OLED_MIX_MODE;
 
 /**
- *  *ELEMENT结构体 屏幕左上角为坐标原点(0,0),其中x,y,w,h单位均为像素
+ *  \brief ELEMENT结构体 屏幕左上角为坐标原点(0,0),其中x,y,w,h单位均为像素
  *  \param x 左向右X正方向
  *  \param y 上向下Y正方向
  *  \param w 矩形宽度
@@ -38,16 +36,19 @@ typedef struct {
     u8 *data;
 } ELEMENT;
 
-void OLED_RAM_Refresh(u8 *RAM);
-void OLED_RAM_Clear(u8 *RAM);
-void OLED_RAM_Fill(u8 *RAM);
+extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
 
-void OLED_Draw_Point(u8 x, u8 y, u8 *RAM, u8 draw);
-void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw);
-void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, u8 *RAM, u8 draw);
-void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, u8 draw);
-void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, u8 *RAM, OLED_MIX_MODE mix);
+void OLED_BUFFER_Refresh(void);
+void OLED_BUFFER_Clear(void);
+void OLED_BUFFER_Fill(void);
 
+void OLED_Draw_Point(u8 x, u8 y, OLED_MIX_MODE mix);
+void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
+void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, OLED_MIX_MODE mix);
+void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
+void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
+
+// TODO 重写剩余函数
 void OLED_Show_Char(u8 x, u8 page, char c, u8 *RAM, u8 draw);
 void OLED_Show_String(u8 x, u8 page, char *str, u8 *RAM, u8 draw);
 void OLED_Show_Num(u8 x, u8 page, u32 num, u8 len, u8 *RAM, u8 draw);
@@ -58,7 +59,6 @@ void OLED_Show_BMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 void OLED_Show_MixString(u8 x, u8 page, char *String, u8 * RAM, u8 draw);
 
 void OLED_Show_Element(ELEMENT ele);
-extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
 
 void OLED_Show_Char_At(int16_t x, int16_t y, char c, OLED_MIX_MODE draw_mode);
 void OLED_Show_EString(int16_t x, int16_t y, char *str, OLED_MIX_MODE draw_mode);
