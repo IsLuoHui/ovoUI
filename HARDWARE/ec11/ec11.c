@@ -1,7 +1,7 @@
 #include "ec11.h"
 #include "spi.h"
 
-u8 Ec11Trigger=0x00;
+u8 Ec11State=0x00;
 
 static u8 EC11_AL;
 
@@ -93,7 +93,7 @@ void TIM4_IRQHandler(void)
 { 	
 	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//更新中断
     {
-        Ec11Trigger |= EC11_Scan();
+        Ec11State |= EC11_Scan();
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
 	}
 }

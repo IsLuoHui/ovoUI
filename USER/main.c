@@ -57,7 +57,12 @@ int main(void)
 		if (tT & 0x04)OLED_Show_Char(8, 6, '1', FrameBuffer, 1);
 		if (tT & 0x02)OLED_Show_Char(16, 6, '1', FrameBuffer, 1);
 		if (tT & 0x01)OLED_Show_Char(24, 6, '1', FrameBuffer, 1);
-
+        extern u8 tg,ta;
+        if (ta) {
+            OLED_Show_Char(32, 6, '#', FrameBuffer, 1);
+            ta = 0;
+        }
+        if (tg)OLED_Show_Char(40, 6, '@', FrameBuffer, 1);
 
         OLED_BUFFER_Refresh();
 

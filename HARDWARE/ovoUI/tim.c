@@ -37,24 +37,78 @@ void TIM3_Init(void) {
     LED_OFF;
 }
 
+u8 ta = 0;
+u8 tg = 0;
+
+void On_EC11_Rotate_Right() {
+    //右转
+    GlobalX += (ICONSPACE + ICON48W);
+}
+void On_EC11_Rotate_Left() {
+    //左转
+    GlobalX -= (ICONSPACE + ICON48W);
+}
+void On_EC11_Press() {
+    //按下触发
+    ta = 1;
+}
+void On_EC11_Release() {
+    //按下后未旋转，抬起触发
+    tg ^= 0xFF;
+}
+
+
+void Handle_EC11_Event(u8 ec11) {
+    static u8 prevState = 0;
+    static u8 keyDown = 0;
+
+    if (ec11 & 0x04) {
+        keyDown = 0;
+        On_EC11_Rotate_Right();
+    } else if (ec11 & 0x02) {
+        keyDown = 0;
+        On_EC11_Rotate_Left();
+    }
+    else {
+        if (!(prevState & 0x01) && (ec11 & 0x01)) {
+            // 按键刚刚按下
+            keyDown = 1;
+            On_EC11_Press();
+        }
+        else if ((prevState & 0x01) && !(ec11 & 0x01)) {
+            // 松开
+            if (keyDown) {
+                keyDown = 0;
+                On_EC11_Release();  // 仅在未被打断时触发
+            }
+        }
+    }
+
+    prevState = ec11;
+}
+
+
+
 void TIM3_IRQHandler(void)
 { 	
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
-        switch (Ec11Trigger){
+        Handle_EC11_Event(Ec11State);
+        
+        switch (Ec11State) {
             // TODO 选项切换动画 
-            case EC11TURNRIGTH:
-                GlobalX += (ICONSPACE + ICON48W);
-                break;
-            case EC11TURNLEFT:
-                GlobalX -= (ICONSPACE + ICON48W);
-                break;
+            //case EC11TURNRIGTH:
+            //    GlobalX += (ICONSPACE + ICON48W);
+            //    break;
+            //case EC11TURNLEFT:
+            //    GlobalX -= (ICONSPACE + ICON48W);
+            //    break;
             case EC11BUTTON:
                 // TODO 转场动画
 
                 break;
         }
-        tT = Ec11Trigger;
-        Ec11Trigger = 0;
+        tT = Ec11State;
+        Ec11State = 0;
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
         DrawShow();
     }
