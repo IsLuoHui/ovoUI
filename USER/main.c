@@ -10,14 +10,6 @@
 
 //#define DEBUG
 
-
-
-extern float xt;
-extern float yt;
-
-extern u8 keydown;
-
-
 int main(void)
 {
 
@@ -26,24 +18,17 @@ int main(void)
     OLED_Init();
     EC11_Init();
     TIM3_Init();
-
     Menu_Init();
-
-    TEXT te = {8,8,"HelloWorld",OLED_MIX_XOR,0};
-    TEXT_Preprocess(&te);
 
     while (1)
 	{
         for (u8 i = 0;i < menu.optnum;i++){
             menu.opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
-            menu.opt[i].ele.y = GlobalY;
+            menu.opt[i].text.x = GlobalX + (ICON48W + ICONSPACE) * i;
         }
-
-
-
-
         memset(FrameBuffer, 0, 1024);
 
+        
         #ifdef DEBUG
         int16_t gx = GlobalX;
         if (gx < 0) {
@@ -56,23 +41,23 @@ int main(void)
         OLED_Show_Num(0, 6, (u16)(xt * 1000), 4, FrameBuffer, 1);
         #endif
 
-        for (u8 i = 0;i < menu.optnum;i++)OLED_Draw_Element(menu.opt[i].ele);
 
-        OLED_Draw_FillRect(cursor.x1, cursor.y1, cursor.x2, cursor.y2, OLED_MIX_XOR);
 
-        OLED_Draw_Point(cursor.x1, cursor.y1, OLED_MIX_XOR);
-        OLED_Draw_Point(cursor.x1, cursor.y2-1, OLED_MIX_XOR);
-        OLED_Draw_Point(cursor.x2-1, cursor.y1, OLED_MIX_XOR);
-        OLED_Draw_Point(cursor.x2-1, cursor.y2-1, OLED_MIX_XOR);
 
-        te.x = cursor.x2;
-        te.y = cursor.y1+16;
-        OLED_Draw_Text(te);
 
-        //OLED_Draw_Rect(0, 0, cursor.x1, cursor.y1, OLED_MIX_XOR);
-        //OLED_Draw_FillRect(0, 56, 128, 64, FrameBuffer, OLED_MIX_XOR);
-        //OLED_Draw_Line(127, 63, cursor.x1, cursor.y1, OLED_MIX_XOR);
-        //OLED_Draw_DashedLine(0, 32, cursor.x1, cursor.y1, 4, OLED_MIX_XOR);
+        for (u8 i = 0;i < menu.optnum;i++)
+        {
+            OLED_Draw_Element(menu.opt[i].ele);
+            //OLED_Draw_Text(menu.opt[i].text);
+        }
+        OLED_Draw_FillRect(cursor.x0, cursor.y0, cursor.x1, cursor.y1, OLED_MIX_XOR);
+
+        extern u8 tT;
+        if (tT & 0x08)OLED_Show_Char(0, 6, '1', FrameBuffer, 1);
+		if (tT & 0x04)OLED_Show_Char(8, 6, '1', FrameBuffer, 1);
+		if (tT & 0x02)OLED_Show_Char(16, 6, '1', FrameBuffer, 1);
+		if (tT & 0x01)OLED_Show_Char(24, 6, '1', FrameBuffer, 1);
+
 
         OLED_BUFFER_Refresh();
 

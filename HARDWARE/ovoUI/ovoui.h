@@ -3,12 +3,14 @@
 #include "stm32f10x.h"
 #include "oled.h"
 
+// *文字列表
 typedef struct
 {
     TEXT text;
     void (*action)(void);
 }LIST;
 
+// *图标列表
 typedef struct
 {
     TEXT text;
@@ -17,6 +19,7 @@ typedef struct
     u8 listnum; //列表个数
 }OPTION;
 
+// *图标菜单
 typedef struct
 {
     OPTION *opt;    //选项列表
@@ -26,14 +29,15 @@ typedef struct
 }MENU;
 
 typedef struct {
-    u8 x1,y1,x2,y2;
+    u8 x0,y0,x1,y1;
 }CURSOR;
 
-#define ICONSPACE 16
+#define ICONSPACE 4
 
 void Menu_Init(void);
 
 extern MENU menu;
 extern OPTION MainMenu[];
+extern CURSOR cursor;
 
 #endif

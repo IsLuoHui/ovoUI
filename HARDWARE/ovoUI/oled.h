@@ -9,7 +9,9 @@
 #define OLED_HEIGHT_PIXEL (OLED_HEIGHT_PAGE*8) //pixel
 #define OLED_BUFFER_SIZE (OLED_WIDTH * OLED_HEIGHT_PAGE) //byte
 
-// *混合方式
+/**
+ *  \brief 混合方式
+ */
 typedef enum {
     OLED_MIX_HIDE   = 0x00,   // 隐藏
     OLED_MIX_COVER  = 0x01,   // 覆盖=
@@ -38,12 +40,17 @@ typedef struct {
 
 /**
  *  \brief TEXT结构体 用于显示文本
+ *  \param x 显示起始X坐标
+ *  \param y 显示起始Y坐标
+ *  \param *str 显示文本
+ *  \param mix 混合模式
+ *  \param *font 字模数组指针，通过`Text_Preprocess(TEXT *text)`函数自动处理;
  */
 typedef struct {
     int16_t x, y;
     char *str;
     OLED_MIX_MODE mix; 
-    u8 *font[128];
+    u8 *font[64];
 } TEXT;
 
 extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区

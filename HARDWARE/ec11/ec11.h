@@ -42,7 +42,6 @@
 void EC11_Init(void);
 u8 EC11_Scan(void);
 
-extern u8 ec11;
 extern u8 Ec11Trigger;
 
 #endif 
