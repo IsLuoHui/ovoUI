@@ -5,19 +5,21 @@
 
 typedef struct
 {
-    ELEMENT ele;
+    TEXT text;
     void (*action)(void);
-}OPTION;
+}LIST;
 
-typedef enum {
-    MENU_SHOW_Horizontal = 0x01,
-    MENU_SHOW_Vertical = 0x02,
-}MENU_SHOW_MODE;
+typedef struct
+{
+    TEXT text;
+    ELEMENT ele; //选项元素
+    LIST *list;
+    u8 listnum; //列表个数
+}OPTION;
 
 typedef struct
 {
     OPTION *opt;    //选项列表
-    MENU_SHOW_MODE mode; //显示方式 //TODO 大图标显示和列表显示
     u8 optnum;  //选项个数
     u8 leftend; //左端
     int16_t position; //显示位置，用于记录上次选中
@@ -29,11 +31,9 @@ typedef struct {
 
 #define ICONSPACE 16
 
-void _Main(void);
-void _Model(void);
+void Menu_Init(void);
 
-extern MENU menus[];
+extern MENU menu;
 extern OPTION MainMenu[];
-extern u8 screen;
 
 #endif

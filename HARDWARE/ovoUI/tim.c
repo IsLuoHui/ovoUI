@@ -62,7 +62,7 @@ void TIM3_Init(void) {
 void TIM3_IRQHandler(void)
 { 	
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
-        u8 choice = 0;
+        //u8 choice = 0;
         switch (Ec11Trigger) {
             case EC11TURNRIGTH:
                 if(keydown)break;
@@ -87,16 +87,15 @@ void TIM3_IRQHandler(void)
 
                 break;
             case EC11BUTTON:
-                // TODO 转场动画完善
-                if (GlobalX < TargetX - ICON48W/2 && GlobalX > TargetX + ICON48W/2)break;
-                choice = (LeftEnd - GlobalX) / (ICONSPACE + ICON48W);
-                if (menus[screen].opt[choice].action) {
-                    animStartY = menus[screen].opt[0].ele.y;
-                    TargetY = 64;
-                    yt = 0;
-                    menus[screen].opt[choice].action();
-
-                }
+                //// TODO 转场动画完善
+                //if (GlobalX < TargetX - ICON48W/2 && GlobalX > TargetX + ICON48W/2)break;
+                //choice = (LeftEnd - GlobalX) / (ICONSPACE + ICON48W);
+                //if (menus[screen].opt[choice].action) {
+                //    animStartY = menus[screen].opt[0].ele.y;
+                //    TargetY = 64;
+                //    yt = 0;
+                //    menus[screen].opt[choice].action();
+                //}
                 
                 
                 
@@ -113,11 +112,9 @@ void TIM3_IRQHandler(void)
 
 
 void DrawShow(void) {
-    //TODO 根据显示模式绘制
+    //TODO 文字绘制
 
     //TODO 光标动效优化
-    //if (menus[screen].opt[0].ele.y == 8) {    }
-
     if (GlobalX != TargetX) {
         
         cursor.x1 = lerp(CURX - 4, CURX, Gxt);

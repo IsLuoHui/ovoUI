@@ -27,16 +27,16 @@ int main(void)
     EC11_Init();
     TIM3_Init();
 
-    _Main();
+    Menu_Init();
 
     TEXT te = {8,8,"HelloWorld",OLED_MIX_XOR,0};
     TEXT_Preprocess(&te);
 
     while (1)
 	{
-        for (u8 i = 0;i < menus[screen].optnum;i++){
-            menus[screen].opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
-            menus[screen].opt[i].ele.y = GlobalY;
+        for (u8 i = 0;i < menu.optnum;i++){
+            menu.opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
+            menu.opt[i].ele.y = GlobalY;
         }
 
 
@@ -56,7 +56,7 @@ int main(void)
         OLED_Show_Num(0, 6, (u16)(xt * 1000), 4, FrameBuffer, 1);
         #endif
 
-        for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Draw_Element(menus[screen].opt[i].ele);
+        for (u8 i = 0;i < menu.optnum;i++)OLED_Draw_Element(menu.opt[i].ele);
 
         OLED_Draw_FillRect(cursor.x1, cursor.y1, cursor.x2, cursor.y2, OLED_MIX_XOR);
 

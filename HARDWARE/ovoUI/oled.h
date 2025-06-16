@@ -19,7 +19,7 @@ typedef enum {
 } OLED_MIX_MODE;
 
 /**
- *  \brief ELEMENT结构体 屏幕左上角为坐标原点(0,0),其中x,y,w,h单位均为像素
+ *  \brief ELEMENT结构体 用于显示任意矩形元素
  *  \param x 左向右X正方向
  *  \param y 上向下Y正方向
  *  \param w 矩形宽度
@@ -37,7 +37,7 @@ typedef struct {
 } ELEMENT;
 
 /**
- *  
+ *  \brief TEXT结构体 用于显示文本
  */
 typedef struct {
     int16_t x, y;

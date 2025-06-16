@@ -7,44 +7,45 @@ u8 screen = 0;
 
 extern float at;
 
-// TODO 记忆选项
-void _Main(void) {
-    for (u8 i = 0;i < menus[0].optnum;i++) {
-        menus[0].opt[i].ele.y = 0;
-        menus[0].opt[i].ele.w = ICON48W;
-        menus[0].opt[i].ele.h = ICON48H;
-        menus[0].opt[i].ele.mix = OLED_MIX_XOR;
-        //menus[0].opt[i].ele.data = (u8 *)ICON_48X48[i];
+// TODO 补充初始化
+void Menu_Init(void) {
+    for (u8 i = 0; i < menu.optnum; i++) {
+        menu.opt[i].ele.y = 0;
+        menu.opt[i].ele.w = ICON48W;
+        menu.opt[i].ele.h = ICON48H;
+        menu.opt[i].ele.mix = OLED_MIX_XOR;
+        //menu.opt[i].ele.data = (u8 *)ICON_48X48[i];
     }
-    screen = 0;
-    Position_Init(menus[0]);
+    Position_Init(menu);
 }
 
-void _Model(void) {
-    for (u8 i = 0;i < menus[1].optnum;i++) {
-        menus[1].opt[i].ele.y = 0;
-        menus[1].opt[i].ele.w = ICON48W;
-        menus[1].opt[i].ele.h = ICON48H;
-        menus[1].opt[i].ele.mix = OLED_MIX_XOR;
-        //menus[0].opt[i].ele.data = (u8 *)ICON_48X48[i];
-    }
-    screen = 1;
-    Position_Init(menus[1]);
-}
+LIST list1[] = {
+    {{0, 0, "c1", OLED_MIX_XOR, 0},0},
+    {{0, 0, "c2", OLED_MIX_XOR, 0},0},
+    {{0, 0, "c3", OLED_MIX_XOR, 0},0},
+    {{0, 0, "c4", OLED_MIX_XOR, 0},0},
+};
 
 OPTION MainMenu[] = {
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[1]}, _Model },
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[2]}, 0 },
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[3]}, 0 },
+    {
+        {0,0,"1",OLED_MIX_HIDE,0},
+        {0, 0, 0, 0, OLED_MIX_HIDE,(u8 *)ICON_48X48[1]},
+        list1,
+        sizeof(list1) / sizeof(list1[0])
+    },
+    {
+        {0,0,"2",OLED_MIX_HIDE,0},
+        {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[2]},
+        list1,
+        sizeof(list1) / sizeof(list1[0])
+    },
+    {
+        {0,0,"3",OLED_MIX_HIDE,0},
+        {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[3]},
+        list1,
+        sizeof(list1) / sizeof(list1[0])
+    },
 };
 
-OPTION ModelMenu[] = {
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[0]}, 0 },
-    { {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[4]}, _Main },
-};
 
-
-MENU menus[] = {
-    {MainMenu,MENU_SHOW_Horizontal,sizeof(MainMenu) / sizeof(MainMenu[0]),40,40},
-    {ModelMenu,MENU_SHOW_Horizontal,sizeof(ModelMenu) / sizeof(ModelMenu[0]),40,40},
-};
+MENU menu = {MainMenu,sizeof(MainMenu) / sizeof(MainMenu[0]),40,40};
