@@ -17,6 +17,7 @@ extern float yt;
 
 extern u8 keydown;
 
+
 int main(void)
 {
 
@@ -27,6 +28,9 @@ int main(void)
     TIM3_Init();
 
     _Main();
+
+    TEXT te = {8,8,"HelloWorld",OLED_MIX_XOR,0};
+    TEXT_Preprocess(&te);
 
     while (1)
 	{
@@ -52,7 +56,7 @@ int main(void)
         OLED_Show_Num(0, 6, (u16)(xt * 1000), 4, FrameBuffer, 1);
         #endif
 
-        for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Show_Element(menus[screen].opt[i].ele);
+        for (u8 i = 0;i < menus[screen].optnum;i++)OLED_Draw_Element(menus[screen].opt[i].ele);
 
         OLED_Draw_FillRect(cursor.x1, cursor.y1, cursor.x2, cursor.y2, OLED_MIX_XOR);
 
@@ -61,9 +65,13 @@ int main(void)
         OLED_Draw_Point(cursor.x2-1, cursor.y1, OLED_MIX_XOR);
         OLED_Draw_Point(cursor.x2-1, cursor.y2-1, OLED_MIX_XOR);
 
-        OLED_Draw_Rect(0, 0, cursor.x1, cursor.y1, OLED_MIX_XOR);
+        te.x = cursor.x2;
+        te.y = cursor.y1+16;
+        OLED_Draw_Text(te);
+
+        //OLED_Draw_Rect(0, 0, cursor.x1, cursor.y1, OLED_MIX_XOR);
         //OLED_Draw_FillRect(0, 56, 128, 64, FrameBuffer, OLED_MIX_XOR);
-        //OLED_Show_EString(0, cursor.y1, "OLED_Demo",OLED_MIX_XOR);
+        //OLED_Draw_Line(127, 63, cursor.x1, cursor.y1, OLED_MIX_XOR);
         //OLED_Draw_DashedLine(0, 32, cursor.x1, cursor.y1, 4, OLED_MIX_XOR);
 
         OLED_BUFFER_Refresh();

@@ -32,9 +32,19 @@ typedef enum {
 typedef struct {
     int16_t x, y;
     u8 w, h;
-    OLED_MIX_MODE mix; 
+    OLED_MIX_MODE mix;
     u8 *data;
 } ELEMENT;
+
+/**
+ *  
+ */
+typedef struct {
+    int16_t x, y;
+    char *str;
+    OLED_MIX_MODE mix; 
+    u8 *font[128];
+} TEXT;
 
 extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
 
@@ -47,6 +57,10 @@ void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
 void OLED_Draw_DashedLine(u8 x0, u8 y0, u8 x1, u8 y1, u8 dashlen, OLED_MIX_MODE mix);
 void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
 void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
+void OLED_Draw_Element(ELEMENT ele);
+
+void TEXT_Preprocess(TEXT *text);
+void OLED_Draw_Text(TEXT text);
 
 // TODO 重写剩余函数
 void OLED_Show_Char(u8 x, u8 page, char c, u8 *RAM, u8 draw);
@@ -55,13 +69,8 @@ void OLED_Show_Num(u8 x, u8 page, u32 num, u8 len, u8 *RAM, u8 draw);
 void OLED_Show_HexNum(u8 x, u8 page, u32 num, u8 len, u8 *RAM, u8 draw);
 void OLED_Show_CN(u8 x, u8 page, u8 CC[], u8 *RAM, u8 draw);
 void OLED_Show_CNString(u8 x, u8 page, char *String, u8 *RAM, u8 draw);
-void OLED_Show_BMP(u8 x, u8 page, u8 w, u8 h, u8 BMP[], u8 *RAM, u8 draw);
 void OLED_Show_MixString(u8 x, u8 page, char *String, u8 * RAM, u8 draw);
 
-void OLED_Show_Element(ELEMENT ele);
-
-void OLED_Show_Char_At(int16_t x, int16_t y, char c, OLED_MIX_MODE draw_mode);
-void OLED_Show_EString(int16_t x, int16_t y, char *str, OLED_MIX_MODE draw_mode);
 
 
 #endif
