@@ -59,7 +59,9 @@
             "type_traits": "c",
             "tuple": "c",
             "valarray": "c",
-            "cstring": "c"
+            "cstring": "c",
+            "cinttypes": "c",
+            "cstdlib": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

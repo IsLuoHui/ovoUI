@@ -2,6 +2,7 @@
 #include "ec11.h"
 #include "oled.h"
 #include "font.h"
+#include "stdlib.h"
 
 //static inline int lerp(int start, int end, float t) {
 //    return start + (int)((end - start) * t);
@@ -10,7 +11,7 @@
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-    TIM_TimeBaseStructure.TIM_Period = 999;//arr 自动重装载
+    TIM_TimeBaseStructure.TIM_Period = 4999;//arr 自动重装载
     TIM_TimeBaseStructure.TIM_Prescaler = 71;//psc 预分频
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
@@ -53,6 +54,37 @@ void On_EC11_Release() {
     } else On_Menu_Enter();
 }
 
+void EaseOutSimple(int16_t *value, int16_t target,u8 division) {
+    int16_t diff = target - *value;
+
+    if (diff == 0) return;
+
+    // 指数式减速
+    int16_t step = diff/ division;
+
+    // 至少移动一步，防止卡住
+    if (step == 0) step = (diff > 0) ? 1 : -1;
+
+    *value += step;
+}
+
+void EaseOutSimpleU8(uint8_t *value, uint8_t target, uint8_t division) {
+    if (*value == target) return;
+
+    int16_t diff = (int16_t)target - (int16_t)(*value);
+    int16_t step = diff / division;
+
+    if (step == 0) step = (diff > 0) ? 1 : -1;
+
+    int16_t result = (int16_t)(*value) + step;
+
+    // 裁剪结果，确保仍在 uint8_t 范围内
+    if (result < 0) result = 0;
+    if (result > 255) result = 255;
+
+    *value = (uint8_t)result;
+}
+
 void TIM3_IRQHandler(void)
 { 	
     if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
@@ -83,55 +115,77 @@ void TIM3_IRQHandler(void)
         prevState = Ec11State;
         Ec11State = 0x00;
 
-        // TODO 选项切换动画
-        // TODO 转场动画
-        // TODO 光标动效
+        
+        // TODO 转场动画调整
+        EaseOutSimple(&menuOffsetX, menuOffsetX_Target,5);
 
-        if (menu.offset > 0)menu.offset = 0;
-        if (menu.offset < -(menu.optnum-1) * (ICON48W + ICONSPACE))
-            menu.offset = -(menu.optnum - 1) * (ICON48W + ICONSPACE);
+        //主菜单边缘
+        if (menuOffsetX > ICON48W / 2)menuOffsetX_Target = 0;
+        if (menuOffsetX < -(menu.optnum - 1) * (ICON48W + ICONSPACE) - ICON48W / 2)
+            menuOffsetX_Target = -(menu.optnum - 1) * (ICON48W + ICONSPACE);
+        //子菜单边缘
         if (optionOffset > 0)optionOffset = 0;
         if (optionOffset < -(menu.opt[MENUCHOICE].listnum-4) * 16)
             optionOffset = -(menu.opt[MENUCHOICE].listnum-4) * 16;
 
 
         for (u8 i = 0;i < menu.optnum;i++) {
-            //正常左右选择偏移
-            menu.opt[i].ele.x = menu.offset + MENULEFTEND + (ICON48W + ICONSPACE) * i;
-            //文字动画
+            
+            //文字动画 //TODO 文字动画效果
             if (MENUCHOICE != i || menuState) {
                 menu.opt[i].text.y = 64;
             } else {
-                menu.opt[i].text.y = 48;
+                EaseOutSimple(&menu.opt[i].text.y, 48, 10);
             }
-            //子菜单动画偏移x
+            //主菜单绘制
             if (menuState) {
-                if (i < MENUCHOICE)menu.opt[i].ele.x = -ICON48W;
-                if (i == MENUCHOICE)menu.opt[i].ele.x = -ICON48W/2;
-                if (i > MENUCHOICE)menu.opt[i].ele.x = OLED_WIDTH;
+                if (i < MENUCHOICE)EaseOutSimple(&menu.opt[i].ele.x, -ICON48W, 8);
+                    //menu.opt[i].ele.x = -ICON48W;
+                if (i == MENUCHOICE)EaseOutSimple(&menu.opt[i].ele.x, -ICON48W/2,16);
+                    //menu.opt[i].ele.x = -ICON48W / 2;
+                if (i > MENUCHOICE)EaseOutSimple(&menu.opt[i].ele.x, OLED_WIDTH,16);
+                    //menu.opt[i].ele.x = OLED_WIDTH;
+            }else{
+                EaseOutSimple(&menu.opt[i].ele.x, menuOffsetX + MENULEFTEND + (ICON48W + ICONSPACE) * i, 10);
+                //menu.opt[i].ele.x = menuOffsetX + MENULEFTEND + (ICON48W + ICONSPACE) * i;
             }
             //子菜单动画偏移y
-            menu.opt[i].ele.y = menuOffsetY;
+            EaseOutSimple(&menu.opt[i].ele.y, menuOffsetY, 24);
         }
-        //子菜单绘制
+        //子菜单绘制 // TODO 选项切换动画调整
         for (u8 i = 0;i < menu.opt[MENUCHOICE].listnum;i++) {
-            if (menuState)menu.opt[MENUCHOICE].list[i].text.y = i * 16+optionOffset;
-            else menu.opt[MENUCHOICE].list[i].text.y = OLED_HEIGHT_PIXEL;
+            if (menuState)EaseOutSimple(&menu.opt[MENUCHOICE].list[i].text.y, i * 16 + optionOffset, 16);
+            //if (menuState)menu.opt[MENUCHOICE].list[i].text.y = i * 16+optionOffset;
+            else EaseOutSimple(&menu.opt[MENUCHOICE].list[i].text.y, OLED_HEIGHT_PIXEL, 8);
+            //else menu.opt[MENUCHOICE].list[i].text.y = OLED_HEIGHT_PIXEL;
         }
-        //光标和滚动条部分
+        //光标和滚动条部分 // TODO 光标动效调整
         if (menuState) {
-            cursor.x0 = menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.x;
-            cursor.y0 = cursorOffset;
-            cursor.x1 = cursor.x0 + menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.fontwidth;
-            cursor.y1 = cursor.y0 + 16;
-            scrollbarOffset = 0;
+            EaseOutSimpleU8(&cursor.x0, menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.x, 8);
+            EaseOutSimpleU8(&cursor.y0, cursorOffset, 8);
+            EaseOutSimpleU8(&cursor.x1, cursor.x0 + menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.fontwidth, 8);
+            EaseOutSimpleU8(&cursor.y1, cursor.y0 + 16, 8);
+            EaseOutSimple(&scrollbarOffset, 0, 20);
+            EaseOutSimpleU8(&scrollOffset, OLED_HEIGHT_PIXEL / (menu.opt[MENUCHOICE].listnum - 1) * OPTIONCHOICE, 20);
+            //cursor.x0 = menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.x;
+            //cursor.y0 = cursorOffset;
+            //cursor.x1 = cursor.x0 + menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.fontwidth;
+            //cursor.y1 = cursor.y0 + 16;
+            //scrollbarOffset = 0;
         }
         else {
-            cursor.x0 = 40;
-            cursor.y0 = 0;
-            cursor.x1 = 40 + ICON48W;
-            cursor.y1 = ICON48H;
-            scrollbarOffset = 8;
+            EaseOutSimpleU8(&cursor.x0, 40, 16);
+            EaseOutSimpleU8(&cursor.y0, 0, 16);
+            EaseOutSimpleU8(&cursor.x1, 40 + ICON48W, 16);
+            EaseOutSimpleU8(&cursor.y1, ICON48H, 16);
+            EaseOutSimple(&scrollbarOffset, 8, 20);
+            EaseOutSimpleU8(&scrollOffset, 0, 20);
+            
+            //cursor.x0 = 40;
+            //cursor.y0 = 0;
+            //cursor.x1 = 40 + ICON48W;
+            //cursor.y1 = ICON48H;
+            //scrollbarOffset = 8;
         }
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }

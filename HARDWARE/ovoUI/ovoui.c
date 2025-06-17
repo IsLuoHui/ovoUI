@@ -44,11 +44,11 @@ OPTION mainMenu[] = {
     },
 };
 
-MENU menu = {mainMenu,sizeof(mainMenu) / sizeof(mainMenu[0]),MENULEFTEND,0};
+MENU menu = {mainMenu,sizeof(mainMenu) / sizeof(mainMenu[0]),MENULEFTEND};
 
 WINDOW cursor = {40, 0, 40 + ICON48W, ICON48H};
 
-int16_t menuOffsetX = 0;
+int16_t menuOffsetX = 0, menuOffsetX_Target = 0;
 int16_t menuOffsetY = 0;
 int16_t optionOffset = 0;
 int16_t cursorOffset = 0;
@@ -81,7 +81,7 @@ void Menu_Init(void) {
 }
 
 void On_Menu_Prev(void) {
-    if (menuState == 0)menu.offset -= (ICONSPACE + ICON48W);
+    if (menuState == 0)menuOffsetX_Target -= (ICONSPACE + ICON48W);
     else {
         cursorOffset += 16;
         if (cursorOffset >= OLED_HEIGHT_PIXEL) {
@@ -92,7 +92,7 @@ void On_Menu_Prev(void) {
 }
 
 void On_Menu_Next(void) {
-    if (menuState == 0)menu.offset += (ICONSPACE + ICON48W);
+    if (menuState == 0)menuOffsetX_Target += (ICONSPACE + ICON48W);
     else {
         cursorOffset -= 16;
         if (cursorOffset < 0) {

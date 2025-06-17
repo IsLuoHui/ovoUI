@@ -38,10 +38,6 @@ int main(void)
         OLED_Show_Num(0, 6, (u16)(xt * 1000), 4, FrameBuffer, 1);
         #endif
 
-
-
-
-
         for (u8 i = 0;i < menu.optnum;i++)
         {
             OLED_Draw_Element(menu.opt[i].ele);
@@ -50,11 +46,15 @@ int main(void)
                 OLED_Draw_Text(menu.opt[i].list[j].text);
         }
         OLED_Draw_FillRect(cursor.x0, cursor.y0, cursor.x1, cursor.y1, OLED_MIX_XOR);
+        OLED_Draw_Point(cursor.x0, cursor.y0, OLED_MIX_XOR);
+        OLED_Draw_Point(cursor.x0, cursor.y1 - 1, OLED_MIX_XOR);
+        OLED_Draw_Point(cursor.x1 - 1, cursor.y0, OLED_MIX_XOR);
+        OLED_Draw_Point(cursor.x1 - 1, cursor.y1 - 1, OLED_MIX_XOR);
 
         //滚动条背景
         OLED_Draw_Rect(121 + scrollbarOffset, 0, OLED_WIDTH - 1 + scrollbarOffset, OLED_HEIGHT_PIXEL - 1, OLED_MIX_COVER);
         //滚动条滑块
-        OLED_Draw_FillRect(122 + scrollbarOffset, 0, OLED_WIDTH - 1 + scrollbarOffset, OLED_HEIGHT_PIXEL / (menu.opt[MENUCHOICE].listnum-1) * OPTIONCHOICE, OLED_MIX_COVER);
+        OLED_Draw_FillRect(122 + scrollbarOffset, 0, OLED_WIDTH - 1 + scrollbarOffset, scrollOffset, OLED_MIX_COVER);
 
 
         //OLED_Show_Num(0, 6, MENUCHOICE, 1, FrameBuffer, 1);
