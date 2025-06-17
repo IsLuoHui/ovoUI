@@ -30,23 +30,33 @@ typedef struct
 
 typedef struct {
     u8 x0,y0,x1,y1;
-}CURSOR;
+}WINDOW;
 
-#define ICONSPACE 4
-#define MENULEFTEND 40
+extern int16_t menuOffsetX;
+extern int16_t menuOffsetY;
+extern int16_t optionOffset;
+extern int16_t cursorOffset;
+extern int16_t scrollbarOffset;
+extern u8 scrollOffset;
 
-#define MENUCHOICE (-menu.offset / (ICON48W + ICONSPACE))
+#define ICONSPACE 4 //图标间距
+#define MENULEFTEND 40 //菜单左端
+#define MENUCHOICE (-menu.offset / (ICON48W + ICONSPACE)) //根据偏移计算当前选项
+#define OPTIONCHOICE ((cursorOffset-optionOffset) / 16)
 
 void Menu_Init(void);
 
 extern MENU menu;
-extern OPTION MainMenu[];
-extern CURSOR cursor;
+extern OPTION mainMenu[];
+extern WINDOW cursor, window;
 
-extern int16_t menuOffsetX,menuOffsetY;
+
+
+extern u8 menuState;
 
 void On_Menu_Prev(void);
 void On_Menu_Next(void);
 void On_Menu_Enter(void);
+void On_Menu_Back(void);
 
 #endif

@@ -209,6 +209,7 @@ void TEXT_Preprocess(TEXT *text) {
             text->font[i] = (u8 *)&ASCII_8X16[c - ' '][0];
         }
     }
+    text->fontwidth = strlen(text->str) * 8;
 }
 
 void OLED_Draw_Text(TEXT text) {

@@ -8,15 +8,6 @@
 
 #define EASE_OUT(t) ((t) * (2 - (t)))
 
-#define CURX 40
-#define CURY 0
-#define CURW 48
-#define CURH 48
-
 void TIM3_Init(void);
-void DrawShow(void);
-
-void Position_Init(MENU menu);
-
 
 #endif

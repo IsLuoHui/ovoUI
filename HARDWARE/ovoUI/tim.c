@@ -46,7 +46,11 @@ void On_EC11_Press() {
 }
 void On_EC11_Release() {
     //按下后未旋转，抬起触发
-    On_Menu_Enter();
+    if (menuState) {
+        if(menu.opt[MENUCHOICE].list[OPTIONCHOICE].action)
+            menu.opt[MENUCHOICE].list[OPTIONCHOICE].action();
+        return;
+    } else On_Menu_Enter();
 }
 
 void TIM3_IRQHandler(void)
@@ -79,33 +83,56 @@ void TIM3_IRQHandler(void)
         prevState = Ec11State;
         Ec11State = 0x00;
 
-        DrawShow();
+        // TODO 选项切换动画
+        // TODO 转场动画
+        // TODO 光标动效
+
+        if (menu.offset > 0)menu.offset = 0;
+        if (menu.offset < -(menu.optnum-1) * (ICON48W + ICONSPACE))
+            menu.offset = -(menu.optnum - 1) * (ICON48W + ICONSPACE);
+        if (optionOffset > 0)optionOffset = 0;
+        if (optionOffset < -(menu.opt[MENUCHOICE].listnum-4) * 16)
+            optionOffset = -(menu.opt[MENUCHOICE].listnum-4) * 16;
+
+
+        for (u8 i = 0;i < menu.optnum;i++) {
+            //正常左右选择偏移
+            menu.opt[i].ele.x = menu.offset + MENULEFTEND + (ICON48W + ICONSPACE) * i;
+            //文字动画
+            if (MENUCHOICE != i || menuState) {
+                menu.opt[i].text.y = 64;
+            } else {
+                menu.opt[i].text.y = 48;
+            }
+            //子菜单动画偏移x
+            if (menuState) {
+                if (i < MENUCHOICE)menu.opt[i].ele.x = -ICON48W;
+                if (i == MENUCHOICE)menu.opt[i].ele.x = -ICON48W/2;
+                if (i > MENUCHOICE)menu.opt[i].ele.x = OLED_WIDTH;
+            }
+            //子菜单动画偏移y
+            menu.opt[i].ele.y = menuOffsetY;
+        }
+        //子菜单绘制
+        for (u8 i = 0;i < menu.opt[MENUCHOICE].listnum;i++) {
+            if (menuState)menu.opt[MENUCHOICE].list[i].text.y = i * 16+optionOffset;
+            else menu.opt[MENUCHOICE].list[i].text.y = OLED_HEIGHT_PIXEL;
+        }
+        //光标和滚动条部分
+        if (menuState) {
+            cursor.x0 = menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.x;
+            cursor.y0 = cursorOffset;
+            cursor.x1 = cursor.x0 + menu.opt[MENUCHOICE].list[OPTIONCHOICE].text.fontwidth;
+            cursor.y1 = cursor.y0 + 16;
+            scrollbarOffset = 0;
+        }
+        else {
+            cursor.x0 = 40;
+            cursor.y0 = 0;
+            cursor.x1 = 40 + ICON48W;
+            cursor.y1 = ICON48H;
+            scrollbarOffset = 8;
+        }
         TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
     }
-}
-
-
-
-
-void DrawShow(void) {
-    // TODO 选项切换动画
-    // TODO 转场动画
-    // TODO 文字绘制
-    // TODO 光标动效
-    // TODO 边缘限制
-
-    for (u8 i = 0;i < menu.optnum;i++){
-        menu.opt[i].ele.x = menu.offset + MENULEFTEND + (ICON48W + ICONSPACE) * i;
-
-        if (MENUCHOICE == i) {
-            menu.opt[i].text.y = 48;
-        }else{
-            menu.opt[i].text.y = 64;
-        }
-    }
-}
-
-void Position_Init(MENU menu) {
-    // TODO 位置信息初始化
-    
 }

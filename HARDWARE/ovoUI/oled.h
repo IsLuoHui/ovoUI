@@ -51,6 +51,7 @@ typedef struct {
     char *str;
     OLED_MIX_MODE mix; 
     u8 *font[64];
+    u16 fontwidth;
 } TEXT;
 
 extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
