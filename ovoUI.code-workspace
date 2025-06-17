@@ -58,7 +58,8 @@
             "streambuf": "c",
             "type_traits": "c",
             "tuple": "c",
-            "valarray": "c"
+            "valarray": "c",
+            "cstring": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

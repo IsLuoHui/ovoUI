@@ -22,10 +22,7 @@ int main(void)
 
     while (1)
 	{
-        for (u8 i = 0;i < menu.optnum;i++){
-            menu.opt[i].ele.x = GlobalX + (ICON48W + ICONSPACE) * i;
-            menu.opt[i].text.x = GlobalX + (ICON48W + ICONSPACE) * i;
-        }
+
         memset(FrameBuffer, 0, 1024);
 
         
@@ -48,21 +45,11 @@ int main(void)
         for (u8 i = 0;i < menu.optnum;i++)
         {
             OLED_Draw_Element(menu.opt[i].ele);
-            //OLED_Draw_Text(menu.opt[i].text);
+            OLED_Draw_Text(menu.opt[i].text);
         }
         OLED_Draw_FillRect(cursor.x0, cursor.y0, cursor.x1, cursor.y1, OLED_MIX_XOR);
 
-        extern u8 tT;
-        if (tT & 0x08)OLED_Show_Char(0, 6, '1', FrameBuffer, 1);
-		if (tT & 0x04)OLED_Show_Char(8, 6, '1', FrameBuffer, 1);
-		if (tT & 0x02)OLED_Show_Char(16, 6, '1', FrameBuffer, 1);
-		if (tT & 0x01)OLED_Show_Char(24, 6, '1', FrameBuffer, 1);
-        extern u8 tg,ta;
-        if (ta) {
-            OLED_Show_Char(32, 6, '#', FrameBuffer, 1);
-            ta = 0;
-        }
-        if (tg)OLED_Show_Char(40, 6, '@', FrameBuffer, 1);
+        //OLED_Show_Num(0, 6, MENUCHOICE, 1, FrameBuffer, 1);
 
         OLED_BUFFER_Refresh();
 

@@ -25,7 +25,7 @@ typedef struct
     OPTION *opt;    //选项列表
     u8 optnum;  //选项个数
     u8 leftend; //左端
-    int16_t position; //显示位置，用于记录上次选中
+    int16_t offset; //显示位置，用于记录上次选中
 }MENU;
 
 typedef struct {
@@ -33,11 +33,20 @@ typedef struct {
 }CURSOR;
 
 #define ICONSPACE 4
+#define MENULEFTEND 40
+
+#define MENUCHOICE (-menu.offset / (ICON48W + ICONSPACE))
 
 void Menu_Init(void);
 
 extern MENU menu;
 extern OPTION MainMenu[];
 extern CURSOR cursor;
+
+extern int16_t menuOffsetX,menuOffsetY;
+
+void On_Menu_Prev(void);
+void On_Menu_Next(void);
+void On_Menu_Enter(void);
 
 #endif
