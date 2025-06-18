@@ -49,7 +49,6 @@ MENU menu = {mainMenu,sizeof(mainMenu) / sizeof(mainMenu[0]),MENULEFTEND};
 WINDOW cursor = {40, 0, 40 + ICON48W, ICON48H};
 
 int16_t menuOffsetX = 0, menuOffsetX_Target = 0;
-int16_t menuOffsetY = 0;
 int16_t optionOffset = 0;
 int16_t cursorOffset = 0;
 int16_t scrollbarOffset = 0;
@@ -80,7 +79,7 @@ void Menu_Init(void) {
     }
 }
 
-void On_Menu_Prev(void) {
+void On_Menu_Next(void) {
     if (menuState == 0)menuOffsetX_Target -= (ICONSPACE + ICON48W);
     else {
         cursorOffset += 16;
@@ -91,7 +90,7 @@ void On_Menu_Prev(void) {
     }
 }
 
-void On_Menu_Next(void) {
+void On_Menu_Prev(void) {
     if (menuState == 0)menuOffsetX_Target += (ICONSPACE + ICON48W);
     else {
         cursorOffset -= 16;
@@ -104,12 +103,10 @@ void On_Menu_Next(void) {
 
 void On_Menu_Enter(void) {
     menuState = 1;
-    menuOffsetY = 8;
 }
 
 void On_Menu_Back(void) {
     menuState = 0;
-    menuOffsetY = 0;
     //子菜单不记录选项偏移
     cursorOffset = 0;
     optionOffset = 0;

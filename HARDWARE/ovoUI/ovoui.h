@@ -32,7 +32,6 @@ typedef struct {
 }WINDOW;
 
 extern int16_t menuOffsetX, menuOffsetX_Target;
-extern int16_t menuOffsetY;
 extern int16_t optionOffset;
 extern int16_t cursorOffset;
 extern int16_t scrollbarOffset;
