@@ -10,6 +10,3 @@
 # eide template
 *.ept
 *.eide-template
-
-/HARDWARE/BSP/iic.c
-/HARDWARE/BSP/iic.h

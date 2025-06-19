@@ -44,7 +44,8 @@ typedef struct {
  *  \param y 显示起始Y坐标
  *  \param *str 显示文本
  *  \param mix 混合模式
- *  \param *font 字模数组指针，通过`Text_Preprocess(TEXT *text)`函数自动处理;
+ *  \param *font 字模数组指针，通过`Text_Preprocess(TEXT *text)`函数自动处理
+ *  \param fontwidth 字模显示宽度，通过`Text_Preprocess(TEXT *text)`函数自动处理
  */
 typedef struct {
     int16_t x, y;

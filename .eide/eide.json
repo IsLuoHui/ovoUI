@@ -118,6 +118,9 @@
             "files": [
               {
                 "path": "HARDWARE/BSP/spi.c"
+              },
+              {
+                "path": "HARDWARE/BSP/iic.c"
               }
             ],
             "folders": []

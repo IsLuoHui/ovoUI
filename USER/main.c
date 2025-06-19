@@ -1,15 +1,33 @@
 #include "stm32f10x.h"
-#include "string.h"
 #include "delay.h"
+/*
+#include "string.h"
 #include "spi.h"
 #include "ec11.h"
 #include "oled.h"
 #include "font.h"
 #include "ovoui.h"
 #include "tim.h"
+*/
 
-//#define DEBUG
+#include "iic.h"
 
+//#define DEBUGD
+
+int main() {
+    OLED_INIT();
+    // delay_ms(100);
+    OLED_CMD_INIT();
+    OLED_CLS();
+    OLED_ShowChar(0, 0, 'A');
+    while (1)
+    {
+        OLED_ShowChar(0, 2, 'A');
+    }
+    
+}
+
+/*
 int main(void)
 {
 
@@ -62,6 +80,7 @@ int main(void)
 
         OLED_BUFFER_Refresh();
 
-        delay_ms(10);
+        //delay_ms(10);
     }
 }
+*/
