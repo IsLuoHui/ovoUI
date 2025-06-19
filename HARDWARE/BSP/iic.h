@@ -1,89 +1,32 @@
-#include "stm32f10x.h"
 #ifndef __IIC_H
 #define __IIC_H
+#include "stm32f10x.h"
 
-/**
- *  @brief 初始化OLED IIC引脚,`PA11`模拟`SCL`,`PA12`模拟`SDA`
- */
-void OLED_INIT(void);
+// 时钟 SCL
+#define OLED_IIC_SCL_GPIO GPIOB
+#define OLED_IIC_SCL_PIN GPIO_Pin_12
+#define OLED_IIC_SCL_PIN_ID 12
+#define OLED_IIC_SCL_PIN_RCC RCC_APB2Periph_GPIOB
 
-/**
- *  @brief IIC发送开始信号
- */
-void OLED_I2C_Start(void);
+// 数据 SDA
+#define OLED_IIC_SDA_GPIO GPIOB
+#define OLED_IIC_SDA_PIN GPIO_Pin_13
+#define OLED_IIC_SDA_PIN_ID 13
+#define OLED_IIC_SDA_PIN_RCC RCC_APB2Periph_GPIOB
 
-/**
- *  @brief IIC发送结束信号
- */
-void OLED_I2C_Stop(void);
+#define OLED_IIC_SCL_H (OLED_IIC_SCL_GPIO->BSRR =   OLED_IIC_SCL_PIN)
+#define OLED_IIC_SCL_L (OLED_IIC_SCL_GPIO->BRR =    OLED_IIC_SCL_PIN)
+#define OLED_IIC_SDA_H (OLED_IIC_SDA_GPIO->BSRR =   OLED_IIC_SDA_PIN)
+#define OLED_IIC_SDA_L (OLED_IIC_SDA_GPIO->BRR =    OLED_IIC_SDA_PIN)
 
-/**
- *  @brief IIC发送一个字节
- *  @param byte 一字节数据
- */
-void OLED_I2C_SendByte(u8 byte);
+void OLED_IIC_GPIO_Init(void);
+void OLED_IIC_INIT(void);
+void OLED_IIC_W_CMD(u8 cmd);
+void OLED_IIC_W_DATA(u8 data);
 
-/**
- *  @brief IIC发送OLED控制命令
- *  @param cmd OLED控制码
- */
-void OLED_Command(u8 cmd);
-
-/**
- *  @brief IIC发送OLED显示数据
- *  @param data OLED显示数据
- */
-void OLED_Data(u8 data);
-
-/**
- *  @brief IIC发送OLED初始化命令
- */
-void OLED_CMD_INIT(void);
-
-/**
- *  @brief 设置OLED屏幕指针位置
- *  @param x 列,范围[0,127]
- *  @param y 页,范围[0,7]
- */
 void OLED_SetCursor(u8 x, u8 y);
-
-/**
- *  @brief OLED清屏
- */
 void OLED_CLS(void);
-
-/**
- *  @brief OLED显示一个字符
- *  @param x 列,范围[0,127]
- *  @param y 页,范围[0,7]
- *  @param c 字符
- */
 void OLED_ShowChar(u8 x, u8 y, char c);
-
-/**
- *  @brief OLED显示字符串
- *  @param x 列,范围[0,127]
- *  @param y 页,范围[0,7]
- *  @param str 字符串
- */
 void OLED_ShowString(u8 x, u8 y, char *str);
-
-/**
- *  @brief OLED显示数字（十进制，正数）
- *  @param x 列,范围[0,127]
- *  @param y 页,范围[0,7]
- *  @param num 要显示的数字,范围[0,4294967295]
- *  @param len 数字长度,不足左边补0,范围[1,10]
- */
-void OLED_ShowNum(u8 x, u8 y, u32 num, u8 len);
-
-/**
-  * @brief  OLED显示数字（十六进制，正数）
-  * @param  x 列,范围[0,127]
-  * @param  y 页,范围[0,7]
-  * @param  num 要显示的数字,范围[0,0xFFFFFFFF]
-  * @param  len 数字长度,范围[1,8]
-  */
-void OLED_ShowHexNum(u8 x, u8 y, u32 num, u8 len);
 
 #endif

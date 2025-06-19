@@ -13,7 +13,7 @@ void OLED_BUFFER_Refresh(void) {
     {
         OLED_Set_Cursor(0, y);
         for (x = 0;x < 128;x++) {
-            OLED_W_DATA(FrameBuffer[cur++]);
+            OLED_SPI_W_DATA(FrameBuffer[cur++]);
         }
     }
 }

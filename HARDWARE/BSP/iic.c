@@ -1,104 +1,132 @@
 #include "iic.h"
+#include "delay.h"
 #include "font.h"
-#define OLED_SCL(x)		GPIO_WriteBit(GPIOB, GPIO_Pin_12, (BitAction)(x))
-#define OLED_SDA(x)		GPIO_WriteBit(GPIOB, GPIO_Pin_13, (BitAction)(x))
-#define OLED_ADDR 0x78 //OLED模块IIC地址
 
+#define DL 1
+#define OLED_ADDR 0x78 // OLED IIC地址
 
-void OLED_INIT(void)
-{
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-	
-	OLED_SCL(1);
-	OLED_SDA(1);
+void OLED_IIC_GPIO_Init(void) {
+    RCC->APB2ENR |= OLED_IIC_SCL_PIN_RCC | OLED_IIC_SDA_PIN_RCC;
+    
+// IIC SCL
+#if OLED_IIC_SCL_PIN_ID < 8
+    OLED_IIC_SCL_GPIO->CRL &= ~((u32)0xF << (4 * OLED_IIC_SCL_PIN_ID));  // 4位清0
+    OLED_IIC_SCL_GPIO->CRL |=  ((u32)0x3 << (4 * OLED_IIC_SCL_PIN_ID));   // MODE6=11(50MHz)
+    OLED_IIC_SCL_GPIO->CRL &= ~((u32)0xC << (4 * OLED_IIC_SCL_PIN_ID));  // CNF6=00(推挽输出)
+#else 
+    OLED_IIC_SCL_GPIO->CRH &= ~((u32)0xF << (4 * (OLED_IIC_SCL_PIN_ID - 8)));
+    OLED_IIC_SCL_GPIO->CRH |=  ((u32)0x3 << (4 * (OLED_IIC_SCL_PIN_ID - 8)));
+    OLED_IIC_SCL_GPIO->CRH &= ~((u32)0xC << (4 * (OLED_IIC_SCL_PIN_ID - 8)));
+#endif
+
+// IIC SDA
+#if OLED_IIC_SDA_PIN_ID < 8
+    OLED_IIC_SDA_GPIO->CRL &= ~((u32)0xF << (4 * OLED_IIC_SDA_PIN_ID));  // 4位清0
+    OLED_IIC_SDA_GPIO->CRL |=  ((u32)0x3 << (4 * OLED_IIC_SDA_PIN_ID));   // MODE6=11(50MHz)
+    OLED_IIC_SDA_GPIO->CRL &= ~((u32)0xC << (4 * OLED_IIC_SDA_PIN_ID));  // CNF6=00(推挽输出)
+#else 
+    OLED_IIC_SDA_GPIO->CRH &= ~((u32)0xF << (4 * (OLED_IIC_SDA_PIN_ID - 8)));
+    OLED_IIC_SDA_GPIO->CRH |=  ((u32)0x3 << (4 * (OLED_IIC_SDA_PIN_ID - 8)));
+    OLED_IIC_SDA_GPIO->CRH &= ~((u32)0xC << (4 * (OLED_IIC_SDA_PIN_ID - 8)));
+#endif
+
+    OLED_IIC_SCL_H;
+    OLED_IIC_SDA_H;
 }
 
-void OLED_I2C_Start(void)
+void OLED_IIC_Start(void)
 {
-	OLED_SDA(1);
-	OLED_SCL(1);
-	OLED_SDA(0);
-	OLED_SCL(0);
+    OLED_IIC_SDA_H;
+    delay_us(DL);
+    OLED_IIC_SCL_H;
+    delay_us(DL);
+    OLED_IIC_SDA_L;
+    delay_us(DL);
+    OLED_IIC_SCL_L;
+    delay_us(DL);
 }
 
-void OLED_I2C_Stop(void)
+void OLED_IIC_Stop(void)
 {
-	OLED_SDA(0);
-	OLED_SCL(1);
-	OLED_SDA(1);
+	OLED_IIC_SDA_L;
+    delay_us(DL);
+	OLED_IIC_SCL_H;
+    delay_us(DL);
+	OLED_IIC_SDA_H;
+    delay_us(DL);
 }
 
-void OLED_I2C_SendByte(u8 byte)
+void OLED_IIC_SendByte(u8 byte)
 {
 	u8 i;
 	for (i = 0; i < 8; i++)
 	{
-		if(byte & 0x80)OLED_SDA(1);
-		else OLED_SDA(0);
-		OLED_SCL(1);
-		OLED_SCL(0);
+		if(byte & 0x80)OLED_IIC_SDA_H;
+		else OLED_IIC_SDA_L;
+        delay_us(DL);
+		OLED_IIC_SCL_H;
+        delay_us(DL);
+		OLED_IIC_SCL_L;
+        delay_us(DL);
 		byte<<=1;
 	}
 	
-	OLED_SCL(1);
-	OLED_SCL(0);
+	OLED_IIC_SCL_H;
+    delay_us(DL);
+	OLED_IIC_SCL_L;
+    delay_us(DL);
 }
 
-void OLED_Command(u8 cmd)
+void inline OLED_IIC_W_CMD(u8 cmd)
 {
-	OLED_I2C_Start();
-	OLED_I2C_SendByte(OLED_ADDR);
-	OLED_I2C_SendByte(0x00);
-	OLED_I2C_SendByte(cmd); 
-	OLED_I2C_Stop();
+	OLED_IIC_Start();
+	OLED_IIC_SendByte(OLED_ADDR);
+	OLED_IIC_SendByte(0x00);
+	OLED_IIC_SendByte(cmd); 
+	OLED_IIC_Stop();
 }
 
-void OLED_Data(u8 data)
+void inline OLED_IIC_W_DATA(u8 data)
 {
-	OLED_I2C_Start();
-	OLED_I2C_SendByte(OLED_ADDR);
-	OLED_I2C_SendByte(0x40);
-	OLED_I2C_SendByte(data);
-	OLED_I2C_Stop();
+	OLED_IIC_Start();
+	OLED_IIC_SendByte(OLED_ADDR);
+	OLED_IIC_SendByte(0x40);
+	OLED_IIC_SendByte(data);
+	OLED_IIC_Stop();
 }
 
-void OLED_CMD_INIT(void)
+void OLED_IIC_INIT(void)
 {
-	OLED_Command(0xAE);	//关闭显示
-	OLED_Command(0xD5);	//设置显示时钟分频比/振荡器频率
-	OLED_Command(0x80);	//刷新率 10~F0 越大越快
-	OLED_Command(0xA8);	//设置多路复用率
-	OLED_Command(0x3F);
-	OLED_Command(0xD3);	//设置显示偏移
-	OLED_Command(0x00);
-	OLED_Command(0x40);	//设置显示开始行
-	OLED_Command(0xA1);	//设置左右方向，0xA1正常 0xA0左右反置
-	OLED_Command(0xC8);	//设置上下方向，0xC8正常 0xC0上下反置
-	OLED_Command(0xDA);	//设置COM引脚硬件配置
-	OLED_Command(0x12);
-	OLED_Command(0x81);	//设置对比度控制
-	OLED_Command(0xCF);
-	OLED_Command(0xD9);	//设置预充电周期
-	OLED_Command(0xF1);
-	OLED_Command(0xDB);	//设置VCOMH取消选择级别
-	OLED_Command(0x30);
-	OLED_Command(0xA4);	//设置整个显示打开/关闭
-	OLED_Command(0xA6);	//设置A6正常/A7反色显示
-	OLED_Command(0x8D);	//设置充电泵
-	OLED_Command(0x14);
-	OLED_Command(0xAF);
+	OLED_IIC_W_CMD(0xAE);	//关闭显示
+	OLED_IIC_W_CMD(0xD5);	//设置显示时钟分频比/振荡器频率
+	OLED_IIC_W_CMD(0x80);	//刷新率 10~F0 越大越快
+	OLED_IIC_W_CMD(0xA8);	//设置多路复用率
+	OLED_IIC_W_CMD(0x3F);
+	OLED_IIC_W_CMD(0xD3);	//设置显示偏移
+	OLED_IIC_W_CMD(0x00);
+	OLED_IIC_W_CMD(0x40);	//设置显示开始行
+	OLED_IIC_W_CMD(0xA1);	//设置左右方向，0xA1正常 0xA0左右反置
+	OLED_IIC_W_CMD(0xC8);	//设置上下方向，0xC8正常 0xC0上下反置
+	OLED_IIC_W_CMD(0xDA);	//设置COM引脚硬件配置
+	OLED_IIC_W_CMD(0x12);
+	OLED_IIC_W_CMD(0x81);	//设置对比度控制
+	OLED_IIC_W_CMD(0xCF);
+	OLED_IIC_W_CMD(0xD9);	//设置预充电周期
+	OLED_IIC_W_CMD(0xF1);
+	OLED_IIC_W_CMD(0xDB);	//设置VCOMH取消选择级别
+	OLED_IIC_W_CMD(0x30);
+	OLED_IIC_W_CMD(0xA4);	//设置整个显示打开/关闭
+	OLED_IIC_W_CMD(0xA6);	//设置A6正常/A7反色显示
+	OLED_IIC_W_CMD(0x8D);	//设置充电泵
+	OLED_IIC_W_CMD(0x14);
+	OLED_IIC_W_CMD(0xAF);
 }
 
 void OLED_SetCursor(u8 x, u8 y)
 {
-	OLED_Command(0xB0 | y);
-	OLED_Command(0x10 | ((x & 0xF0) >> 4));
-	OLED_Command(x & 0x0F);
+	OLED_IIC_W_CMD(0xB0 | y);
+	OLED_IIC_W_CMD(0x10 | ((x & 0xF0) >> 4));
+	OLED_IIC_W_CMD(x & 0x0F);
 }
 
 void OLED_CLS(void)
@@ -109,7 +137,7 @@ void OLED_CLS(void)
 		OLED_SetCursor(0, j);
 		for(i = 0; i < 128; i++)
 		{
-			OLED_Data(0x00);
+			OLED_IIC_W_DATA(0x00);
 		}
 	}
 }
@@ -120,12 +148,12 @@ void OLED_ShowChar(u8 x, u8 y, char c)
 	OLED_SetCursor(x, y);		//设置光标位置在上半部分
 	for (i = 0; i < 8; i++)
 	{
-		OLED_Data(ASCII_8X16[c - ' '][i]);			//显示上半部分内容
+		OLED_IIC_W_DATA(ASCII_8X16[c - ' '][i]);			//显示上半部分内容
 	}
 	OLED_SetCursor(x,y+1);	//设置光标位置在下半部分
 	for (i = 0; i < 8; i++)
 	{
-		OLED_Data(ASCII_8X16[c - ' '][i + 8]);		//显示下半部分内容
+		OLED_IIC_W_DATA(ASCII_8X16[c - ' '][i + 8]);		//显示下半部分内容
 	}
 }
 

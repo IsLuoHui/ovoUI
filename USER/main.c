@@ -15,14 +15,22 @@
 //#define DEBUGD
 
 int main() {
-    OLED_INIT();
-    // delay_ms(100);
-    OLED_CMD_INIT();
+    OLED_IIC_GPIO_Init();
+    OLED_IIC_INIT();
     OLED_CLS();
-    OLED_ShowChar(0, 0, 'A');
     while (1)
     {
-        OLED_ShowChar(0, 2, 'A');
+        OLED_ShowString(0, 0, "0123456789ABCDEF");
+        OLED_ShowString(0, 2, "0123456789ABCDEF");
+        OLED_ShowString(0, 4, "0123456789ABCDEF");
+        OLED_ShowString(0, 6, "0123456789ABCDEF");
+        delay_ms(500);
+        OLED_ShowString(0, 0, "                ");
+        OLED_ShowString(0, 2, "                ");
+        OLED_ShowString(0, 4, "                ");
+        OLED_ShowString(0, 6, "                ");
+        delay_ms(500);
+
     }
     
 }
@@ -33,7 +41,7 @@ int main(void)
 
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     OLED_SPI_GPIO_Init();
-    OLED_Init();
+    OLED_SPI_Init();
     EC11_Init();
     TIM3_Init();
     Menu_Init();

@@ -3,27 +3,31 @@
 #include "stm32f10x.h"
 
 
-//时钟 D0
+// 时钟 D0
 #define OLED_SPI_CLK_GPIO GPIOB
 #define OLED_SPI_CLK_PIN GPIO_Pin_11
 #define OLED_SPI_CLK_PIN_ID 11
 #define OLED_SPI_CLK_PIN_RCC RCC_APB2Periph_GPIOB
-//数据 D1
+
+// 数据 D1
 #define OLED_SPI_DIN_GPIO GPIOB
 #define OLED_SPI_DIN_PIN GPIO_Pin_10
 #define OLED_SPI_DIN_PIN_ID 10
 #define OLED_SPI_DIN_PIN_RCC RCC_APB2Periph_GPIOB
-//重置 RES
+
+// 重置 RES
 #define OLED_SPI_RES_GPIO GPIOB
 #define OLED_SPI_RES_PIN GPIO_Pin_1
 #define OLED_SPI_RES_PIN_ID 1
 #define OLED_SPI_RES_PIN_RCC RCC_APB2Periph_GPIOB
-//命令 DC
+
+// 命令 DC
 #define OLED_SPI_DC_GPIO GPIOB
 #define OLED_SPI_DC_PIN GPIO_Pin_0
 #define OLED_SPI_DC_PIN_ID 0
 #define OLED_SPI_DC_PIN_RCC RCC_APB2Periph_GPIOB
-//片选 CS
+
+// 片选 CS
 #define OLED_SPI_CS_GPIO GPIOA
 #define OLED_SPI_CS_PIN GPIO_Pin_7
 #define OLED_SPI_CS_PIN_ID 7
@@ -41,9 +45,9 @@
 #define OLED_SPI_CS_L (OLED_SPI_CS_GPIO->BRR = OLED_SPI_CS_PIN)
 
 void OLED_SPI_GPIO_Init(void);
-void OLED_Init(void);
-void OLED_W_CMD(u8 cmd);
-void OLED_W_DATA(u8 data);
+void OLED_SPI_Init(void);
+void OLED_SPI_W_CMD(u8 cmd);
+void OLED_SPI_W_DATA(u8 data);
 void OLED_Display_On(void);
 void OLED_Display_Off(void);
 void OLED_Set_Cursor(u8 x, u8 y);
