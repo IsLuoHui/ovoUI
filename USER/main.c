@@ -12,10 +12,15 @@
 //#define DEBUGD
 
 int main() {
-    //LED_SPI_GPIO_Init();
-    //LED_SPI_Init();
+    #ifdef USE_SPI
+    OLED_SPI_GPIO_Init();
+    OLED_SPI_Init();
+    #elif defined USE_IIC
     OLED_IIC_GPIO_Init();
     OLED_IIC_Init();
+    #endif
+    OLED_Screen_Clear();
+
     EC11_Init();
     TIM3_Init();
     Menu_Init();
@@ -60,7 +65,7 @@ int main() {
         //OLED_Show_Num(0, 6, MENUCHOICE, 1, FrameBuffer, 1);
         //OLED_Show_Num(16, 6, OPTIONCHOICE, 1, FrameBuffer, 1);
 
-        OLED_BUFFER_Refresh();
+        OLED_Buffer_Refresh();
 
         //delay_ms(10);
     }

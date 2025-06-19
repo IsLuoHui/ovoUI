@@ -57,9 +57,12 @@ typedef struct {
 
 extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
 
-void OLED_BUFFER_Refresh(void);
-void OLED_BUFFER_Clear(void);
-void OLED_BUFFER_Fill(void);
+void OLED_Screen_Clear(void);
+void OLED_Screen_Fill(void);
+
+void OLED_Buffer_Refresh(void);
+void OLED_Buffer_Clear(void);
+void OLED_Buffer_Fill(void);
 
 void OLED_Draw_Point(u8 x, u8 y, OLED_MIX_MODE mix);
 void OLED_Draw_Line(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
@@ -80,6 +83,10 @@ void OLED_Show_CN(u8 x, u8 page, u8 CC[], u8 *RAM, u8 draw);
 void OLED_Show_CNString(u8 x, u8 page, char *String, u8 *RAM, u8 draw);
 void OLED_Show_MixString(u8 x, u8 page, char *String, u8 * RAM, u8 draw);
 
+#define USE_SPI
 
+#if !defined(USE_SPI) && !defined(USE_IIC)
+#error "OLED Must Choose Use SPI or IIC"
+#endif
 
 #endif

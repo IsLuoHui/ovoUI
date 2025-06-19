@@ -2,7 +2,6 @@
 #define __SPI_H
 #include "stm32f10x.h"
 
-
 // 时钟 D0
 #define OLED_SPI_CLK_GPIO GPIOB
 #define OLED_SPI_CLK_PIN GPIO_Pin_11
@@ -48,10 +47,9 @@ void OLED_SPI_GPIO_Init(void);
 void OLED_SPI_Init(void);
 void OLED_SPI_W_CMD(u8 cmd);
 void OLED_SPI_W_DATA(u8 data);
+void OLED_SPI_Set_Cursor(u8 x, u8 page);
+
 void OLED_Display_On(void);
 void OLED_Display_Off(void);
-void OLED_Set_Cursor(u8 x, u8 y);
-void OLED_Screen_Clear(void);
-void OLED_Screen_Fill(void);
 
 #endif

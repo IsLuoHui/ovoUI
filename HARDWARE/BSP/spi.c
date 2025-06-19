@@ -100,9 +100,6 @@ void OLED_SPI_Init(void) {
     OLED_SPI_W_CMD(0xA4);// Disable Entire Display On (0xa4/0xa5)
     OLED_SPI_W_CMD(0xA6);// Disable Inverse Display On (0xa6/a7) 
     OLED_SPI_W_CMD(0xAF);//--turn on oled panel
-
-    OLED_Screen_Clear();
-    OLED_Set_Cursor(0, 0);
 }
 
 void OLED_SPI_W_CMD(u8 cmd) {
@@ -137,6 +134,12 @@ void OLED_SPI_W_DATA(u8 data) {
     OLED_SPI_DC_H;
 }
 
+void OLED_SPI_Set_Cursor(u8 x, u8 page) {
+    OLED_SPI_W_CMD(0xb0 + page);
+    OLED_SPI_W_CMD(((x & 0xf0) >> 4) | 0x10);
+    OLED_SPI_W_CMD(x & 0x0f);
+}
+
 void OLED_Display_On(void) {
     OLED_SPI_W_CMD(0X8D);  //SET DCDC命令
     OLED_SPI_W_CMD(0X14);  //DCDC ON
@@ -147,28 +150,4 @@ void OLED_Display_Off(void) {
     OLED_SPI_W_CMD(0X8D);  //SET DCDC命令
     OLED_SPI_W_CMD(0X10);  //DCDC OFF
     OLED_SPI_W_CMD(0XAE);  //DISPLAY OFF
-}
-
-void OLED_Set_Cursor(u8 x, u8 y) {
-    OLED_SPI_W_CMD(0xb0 + y);
-    OLED_SPI_W_CMD(((x & 0xf0) >> 4) | 0x10);
-    OLED_SPI_W_CMD(x & 0x0f);
-}
-
-void OLED_Screen_Clear(void) {
-    u8 x, y;
-    for (y = 0;y < 8;y++)
-    {
-        OLED_Set_Cursor(0, y);
-        for(x=0;x<128;x++)OLED_SPI_W_DATA(0x00);
-    }
-}
-
-void OLED_Screen_Fill(void) {
-    u8 x, y;
-    for (y = 0;y < 8;y++)
-    {
-        OLED_Set_Cursor(0, y);
-        for (x = 0;x < 128;x++)OLED_SPI_W_DATA(0xFF);
-    }
 }

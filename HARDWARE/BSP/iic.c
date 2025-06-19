@@ -1,9 +1,4 @@
 #include "iic.h"
-#include "delay.h"
-#include "font.h"
-
-#define DL 1
-#define OLED_ADDR 0x78 // OLED IIC地址
 
 void OLED_IIC_GPIO_Init(void) {
     RCC->APB2ENR |= OLED_IIC_SCL_PIN_RCC | OLED_IIC_SDA_PIN_RCC;
@@ -34,67 +29,6 @@ void OLED_IIC_GPIO_Init(void) {
     OLED_IIC_SDA_H;
 }
 
-void OLED_IIC_Start(void)
-{
-    OLED_IIC_SDA_H;
-    delay_us(DL);
-    OLED_IIC_SCL_H;
-    delay_us(DL);
-    OLED_IIC_SDA_L;
-    delay_us(DL);
-    OLED_IIC_SCL_L;
-    delay_us(DL);
-}
-
-void OLED_IIC_Stop(void)
-{
-	OLED_IIC_SDA_L;
-    delay_us(DL);
-	OLED_IIC_SCL_H;
-    delay_us(DL);
-	OLED_IIC_SDA_H;
-    delay_us(DL);
-}
-
-void OLED_IIC_SendByte(u8 byte)
-{
-	u8 i;
-	for (i = 0; i < 8; i++)
-	{
-		if(byte & 0x80)OLED_IIC_SDA_H;
-		else OLED_IIC_SDA_L;
-        delay_us(DL);
-		OLED_IIC_SCL_H;
-        delay_us(DL);
-		OLED_IIC_SCL_L;
-        delay_us(DL);
-		byte<<=1;
-	}
-	
-	OLED_IIC_SCL_H;
-    delay_us(DL);
-	OLED_IIC_SCL_L;
-    delay_us(DL);
-}
-
-void inline OLED_IIC_W_CMD(u8 cmd)
-{
-	OLED_IIC_Start();
-	OLED_IIC_SendByte(OLED_ADDR);
-	OLED_IIC_SendByte(0x00);
-	OLED_IIC_SendByte(cmd); 
-	OLED_IIC_Stop();
-}
-
-void inline OLED_IIC_W_DATA(u8 data)
-{
-	OLED_IIC_Start();
-	OLED_IIC_SendByte(OLED_ADDR);
-	OLED_IIC_SendByte(0x40);
-	OLED_IIC_SendByte(data);
-	OLED_IIC_Stop();
-}
-
 void OLED_IIC_Init(void)
 {
 	OLED_IIC_W_CMD(0xAE);	//关闭显示
@@ -120,25 +54,30 @@ void OLED_IIC_Init(void)
 	OLED_IIC_W_CMD(0x8D);	//设置充电泵
 	OLED_IIC_W_CMD(0x14);
     OLED_IIC_W_CMD(0xAF);
-    OLED_CLS();
 }
 
-void OLED_SetCursor(u8 x, u8 y)
+void OLED_IIC_W_CMD(u8 cmd)
 {
-	OLED_IIC_W_CMD(0xB0 | y);
+	OLED_IIC_Start();
+	OLED_IIC_SendByte(OLED_ADDR);
+	OLED_IIC_SendByte(0x00);
+	OLED_IIC_SendByte(cmd); 
+	OLED_IIC_Stop();
+}
+
+void OLED_IIC_W_DATA(u8 data)
+{
+	OLED_IIC_Start();
+	OLED_IIC_SendByte(OLED_ADDR);
+	OLED_IIC_SendByte(0x40);
+	OLED_IIC_SendByte(data);
+	OLED_IIC_Stop();
+}
+
+
+void OLED_IIC_Set_Cursor(u8 x, u8 page)
+{
+	OLED_IIC_W_CMD(0xB0 | page);
 	OLED_IIC_W_CMD(0x10 | ((x & 0xF0) >> 4));
 	OLED_IIC_W_CMD(x & 0x0F);
-}
-
-void OLED_CLS(void)
-{  
-	u8 i, j;
-	for (j = 0; j < 8; j++)
-	{
-		OLED_SetCursor(0, j);
-		for(i = 0; i < 128; i++)
-		{
-			OLED_IIC_W_DATA(0x00);
-		}
-	}
 }

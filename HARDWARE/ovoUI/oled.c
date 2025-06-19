@@ -7,25 +7,57 @@
 
 u8 FrameBuffer[OLED_BUFFER_SIZE] = {0};
 
-void OLED_BUFFER_Refresh(void) {
+void OLED_Screen_Clear(void) {
+    u8 x, y;
+    for (y = 0;y < 8;y++)
+    {
+        #ifdef USE_SPI
+        OLED_SPI_Set_Cursor(0, y);
+        #elif defined USE_IIC
+        OLED_IIC_Set_Cursor(0, y);
+        #endif
+        for(x=0;x<128;x++)OLED_SPI_W_DATA(0x00);
+    }
+}
+
+void OLED_Screen_Fill(void) {
+    u8 x, y;
+    for (y = 0;y < 8;y++)
+    {
+        #ifdef USE_SPI
+        OLED_SPI_Set_Cursor(0, y);
+        #elif defined USE_IIC
+        OLED_IIC_Set_Cursor(0, y);
+        #endif
+        for (x = 0;x < 128;x++)OLED_SPI_W_DATA(0xFF);
+    }
+}
+
+void OLED_Buffer_Refresh(void) {
     u8 x, y;
     u16 cur = 0;
     for (y = 0;y < 8;y++)
     {
-        //OLED_Set_Cursor(0, y);
-        OLED_SetCursor(0, y);
+        #ifdef USE_SPI
+        OLED_SPI_Set_Cursor(0, y);
+        #elif defined USE_IIC
+        OLED_IIC_Set_Cursor(0, y);
+        #endif
         for (x = 0;x < 128;x++) {
-            //OLED_SPI_W_DATA(FrameBuffer[cur++]);
+            #ifdef USE_SPI
+            OLED_SPI_W_DATA(FrameBuffer[cur++]);
+            #elif defined USE_IIC
             OLED_IIC_W_DATA(FrameBuffer[cur++]);
+            #endif
         }
     }
 }
 
-void OLED_BUFFER_Clear(void) {
+void OLED_Buffer_Clear(void) {
     memset(FrameBuffer, 0, OLED_BUFFER_SIZE);
 }
 
-void OLED_BUFFER_Fill(void) {
+void OLED_Buffer_Fill(void) {
     for(u16 cur=0;cur<OLED_BUFFER_SIZE;cur++)FrameBuffer[cur]=0xFF;
 }
 
