@@ -20,13 +20,11 @@
 #define OLED_IIC_SDA_L (OLED_IIC_SDA_GPIO->BRR =    OLED_IIC_SDA_PIN)
 
 void OLED_IIC_GPIO_Init(void);
-void OLED_IIC_INIT(void);
+void OLED_IIC_Init(void);
 void OLED_IIC_W_CMD(u8 cmd);
 void OLED_IIC_W_DATA(u8 data);
 
 void OLED_SetCursor(u8 x, u8 y);
 void OLED_CLS(void);
-void OLED_ShowChar(u8 x, u8 y, char c);
-void OLED_ShowString(u8 x, u8 y, char *str);
 
 #endif

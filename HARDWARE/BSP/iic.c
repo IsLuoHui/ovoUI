@@ -95,7 +95,7 @@ void inline OLED_IIC_W_DATA(u8 data)
 	OLED_IIC_Stop();
 }
 
-void OLED_IIC_INIT(void)
+void OLED_IIC_Init(void)
 {
 	OLED_IIC_W_CMD(0xAE);	//关闭显示
 	OLED_IIC_W_CMD(0xD5);	//设置显示时钟分频比/振荡器频率
@@ -119,7 +119,8 @@ void OLED_IIC_INIT(void)
 	OLED_IIC_W_CMD(0xA6);	//设置A6正常/A7反色显示
 	OLED_IIC_W_CMD(0x8D);	//设置充电泵
 	OLED_IIC_W_CMD(0x14);
-	OLED_IIC_W_CMD(0xAF);
+    OLED_IIC_W_CMD(0xAF);
+    OLED_CLS();
 }
 
 void OLED_SetCursor(u8 x, u8 y)
@@ -138,70 +139,6 @@ void OLED_CLS(void)
 		for(i = 0; i < 128; i++)
 		{
 			OLED_IIC_W_DATA(0x00);
-		}
-	}
-}
-
-void OLED_ShowChar(u8 x, u8 y, char c)
-{
-	u8 i;
-	OLED_SetCursor(x, y);		//设置光标位置在上半部分
-	for (i = 0; i < 8; i++)
-	{
-		OLED_IIC_W_DATA(ASCII_8X16[c - ' '][i]);			//显示上半部分内容
-	}
-	OLED_SetCursor(x,y+1);	//设置光标位置在下半部分
-	for (i = 0; i < 8; i++)
-	{
-		OLED_IIC_W_DATA(ASCII_8X16[c - ' '][i + 8]);		//显示下半部分内容
-	}
-}
-
-void OLED_ShowString(u8 x, u8 y, char *str)
-{
-	u8 i;
-	for (i = 0; str[i] != '\0'; i++)
-	{
-		OLED_ShowChar(x+i*8, y, str[i]);
-	}
-}
-
-/**
- *  @brief 计算`a`的`b`次幂
- *  @retval a^b
- */
-u32 po(u32 a, u32 b)
-{
-	u32 r = 1;
-	while (b--)
-	{
-		r *= a;
-	}
-	return r;
-}
-
-void OLED_ShowNum(u8 x, u8 y, u32 num, u8 len)
-{
-	u8 i;
-	for (i = 0; i < len; i++)							
-	{
-		OLED_ShowChar(x+i*8, y, num / po(10, len - i - 1) % 10 + '0');
-	}
-}
-
-void OLED_ShowHexNum(u8 x, u8 y, u32 num, u8 len)
-{
-	u8 i, SingleNumber;
-	for (i = 0; i < len; i++)							
-	{
-		SingleNumber = num / po(16, len - i - 1) % 16;
-		if (SingleNumber < 10)
-		{
-			OLED_ShowChar(x + i * 8, y, SingleNumber + '0');
-		}
-		else
-		{
-			OLED_ShowChar(x + i * 8, y, SingleNumber - 10 + 'A');
 		}
 	}
 }

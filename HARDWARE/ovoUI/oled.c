@@ -1,5 +1,6 @@
 #include "oled.h"
 #include "spi.h"
+#include "iic.h"
 #include <stdlib.h>
 #include "string.h"
 #include "font.h"
@@ -11,9 +12,11 @@ void OLED_BUFFER_Refresh(void) {
     u16 cur = 0;
     for (y = 0;y < 8;y++)
     {
-        OLED_Set_Cursor(0, y);
+        //OLED_Set_Cursor(0, y);
+        OLED_SetCursor(0, y);
         for (x = 0;x < 128;x++) {
-            OLED_SPI_W_DATA(FrameBuffer[cur++]);
+            //OLED_SPI_W_DATA(FrameBuffer[cur++]);
+            OLED_IIC_W_DATA(FrameBuffer[cur++]);
         }
     }
 }
@@ -273,8 +276,6 @@ void OLED_Draw_Text(TEXT text) {
         }
     }
 }
-
-
 
 u32 OLED_POW(u8 m, u8 n)
 {
