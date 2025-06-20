@@ -57,6 +57,8 @@ typedef struct {
 
 extern u8 FrameBuffer[OLED_BUFFER_SIZE]; // *OLED显示缓冲区
 
+void OLED_Init(void);
+
 void OLED_Screen_Clear(void);
 void OLED_Screen_Fill(void);
 

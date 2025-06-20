@@ -1,5 +1,4 @@
 #include "ec11.h"
-#include "spi.h"
 
 u8 Ec11State=0x00;
 

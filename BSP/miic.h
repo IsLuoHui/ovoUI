@@ -1,5 +1,5 @@
-#ifndef __IIC_H
-#define __IIC_H
+#ifndef __MIIC_H
+#define __MIIC_H
 #include "stm32f10x.h"
 #include "delay.h"
 

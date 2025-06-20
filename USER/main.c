@@ -1,25 +1,19 @@
 #include "stm32f10x.h"
 #include "delay.h"
 #include "string.h"
-#include "spi.h"
+#include "mspi.h"
+#include "miic.h"
 #include "ec11.h"
 #include "oled.h"
 #include "font.h"
 #include "ovoui.h"
 #include "tim.h"
-#include "iic.h"
 
 //#define DEBUGD
 
 int main() {
-    #ifdef USE_SPI
-    OLED_SPI_GPIO_Init();
-    OLED_SPI_Init();
-    #elif defined USE_IIC
-    OLED_IIC_GPIO_Init();
-    OLED_IIC_Init();
-    #endif
-    OLED_Screen_Clear();
+    OLED_Init();
+
 
     EC11_Init();
     TIM3_Init();

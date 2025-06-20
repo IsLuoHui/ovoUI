@@ -114,40 +114,13 @@
         "files": [],
         "folders": [
           {
-            "name": "BSP",
-            "files": [
-              {
-                "path": "HARDWARE/BSP/spi.c"
-              },
-              {
-                "path": "HARDWARE/BSP/iic.c"
-              }
-            ],
-            "folders": []
-          },
-          {
             "name": "ovoUI",
             "files": [
               {
                 "path": "HARDWARE/ovoUI/tim.c"
               },
               {
-                "path": "HARDWARE/ovoUI/oled.c"
-              },
-              {
-                "path": "HARDWARE/ovoUI/font.c"
-              },
-              {
                 "path": "HARDWARE/ovoUI/ovoui.c"
-              }
-            ],
-            "folders": []
-          },
-          {
-            "name": "delay",
-            "files": [
-              {
-                "path": "HARDWARE/delay/delay.c"
               }
             ],
             "folders": []
@@ -160,8 +133,35 @@
               }
             ],
             "folders": []
+          },
+          {
+            "name": "oled",
+            "files": [
+              {
+                "path": "HARDWARE/oled/oled.c"
+              },
+              {
+                "path": "HARDWARE/oled/font.c"
+              }
+            ],
+            "folders": []
           }
         ]
+      },
+      {
+        "name": "BSP",
+        "files": [
+          {
+            "path": "BSP/delay.c"
+          },
+          {
+            "path": "BSP/miic.c"
+          },
+          {
+            "path": "BSP/mspi.c"
+          }
+        ],
+        "folders": []
       }
     ]
   },
@@ -239,10 +239,10 @@
           "USER",
           "FWLIB/inc",
           "CORE",
-          "HARDWARE/delay",
-          "HARDWARE/BSP",
+          "BSP",
           "HARDWARE/ovoUI",
-          "HARDWARE/ec11"
+          "HARDWARE/ec11",
+          "HARDWARE/oled"
         ],
         "libList": [],
         "defineList": [

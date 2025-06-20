@@ -1,11 +1,22 @@
 #include "oled.h"
-#include "spi.h"
-#include "iic.h"
+#include "mspi.h"
+#include "miic.h"
 #include <stdlib.h>
 #include "string.h"
 #include "font.h"
 
 u8 FrameBuffer[OLED_BUFFER_SIZE] = {0};
+
+void OLED_Init(void) { 
+    #ifdef USE_SPI
+    OLED_SPI_GPIO_Init();
+    OLED_SPI_Init();
+    #elif defined USE_IIC
+    OLED_IIC_GPIO_Init();
+    OLED_IIC_Init();
+    #endif
+    OLED_Screen_Clear();
+}
 
 void OLED_Screen_Clear(void) {
     u8 x, y;

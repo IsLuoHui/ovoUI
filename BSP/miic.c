@@ -1,4 +1,4 @@
-#include "iic.h"
+#include "miic.h"
 
 void OLED_IIC_GPIO_Init(void) {
     RCC->APB2ENR |= OLED_IIC_SCL_PIN_RCC | OLED_IIC_SDA_PIN_RCC;
