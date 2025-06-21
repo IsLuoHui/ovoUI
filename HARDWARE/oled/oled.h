@@ -73,6 +73,7 @@ void OLED_Draw_Rect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
 void OLED_Draw_FillRect(u8 x0, u8 y0, u8 x1, u8 y1, OLED_MIX_MODE mix);
 void OLED_Draw_Element(ELEMENT ele);
 
+// TODO 汉字显示
 void TEXT_Preprocess(TEXT *text);
 void OLED_Draw_Text(TEXT text);
 

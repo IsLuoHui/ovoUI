@@ -1,8 +1,6 @@
 #include "stm32f10x.h"
 #include "delay.h"
 #include "string.h"
-#include "mspi.h"
-#include "miic.h"
 #include "ec11.h"
 #include "oled.h"
 #include "font.h"

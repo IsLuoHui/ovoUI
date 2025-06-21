@@ -1,8 +1,8 @@
 #include "tim.h"
 #include "ec11.h"
 #include "oled.h"
+#include "ovoui.h"
 #include "font.h"
-#include "stdlib.h"
 
 void TIM3_Init(void) {
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
@@ -21,6 +21,7 @@ void TIM3_Init(void) {
     NVIC_Init(&NVIC_InitStructure);
     TIM_Cmd(TIM3, ENABLE);
 
+    //PC13 LED
     GPIO_InitTypeDef GPIO_InitStruct;
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
     GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13;
@@ -28,18 +29,6 @@ void TIM3_Init(void) {
     GPIO_InitStruct.GPIO_Speed=GPIO_Speed_50MHz;
     GPIO_Init(GPIOC, &GPIO_InitStruct);
     LED_OFF;
-}
-
-void On_EC11_Press() {
-    //按下触发
-}
-void On_EC11_Release() {
-    //按下后未旋转，抬起触发
-    if (menuState) {
-        if(menu.opt[MENUCHOICE].list[OPTIONCHOICE].action)
-            menu.opt[MENUCHOICE].list[OPTIONCHOICE].action();
-        return;
-    } else On_Menu_Enter();
 }
 
 static inline void EaseOut(int16_t *value, int16_t target, u8 division) {
@@ -68,24 +57,34 @@ void TIM3_IRQHandler(void)
 
         if (Ec11State & 0x04) {
             keyDown = 0;
+
             //右转
             On_Menu_Next();
         } else if (Ec11State & 0x02) {
             keyDown = 0;
+
             //左转
             On_Menu_Prev();
         }
         else {
             if (!(prevState & 0x01) && (Ec11State & 0x01)) {
                 keyDown = 1;
+
                 // 按键刚刚按下
-                On_EC11_Press();
+            
             }
             else if ((prevState & 0x01) && !(Ec11State & 0x01)) {
                 // 松开
                 if (keyDown) {
                     keyDown = 0;
-                    On_EC11_Release();  // 仅在未被打断时触发
+
+                    //按下后未旋转，抬起触发
+                    if (menuState) {
+                        if(menu.opt[MENUCHOICE].list[OPTIONCHOICE].action)
+                            menu.opt[MENUCHOICE].list[OPTIONCHOICE].action();
+                        return;
+                    } else On_Menu_Enter();
+                    
                 }
             }
         }
@@ -96,11 +95,11 @@ void TIM3_IRQHandler(void)
         // TODO 动画调整
         EaseOut(&menuOffsetX, menuOffsetX_Target,5);
 
-        //主菜单边缘
+        // if主菜单边缘
         if (menuOffsetX > ICON48W / 2)menuOffsetX_Target = 0;
         if (menuOffsetX < -(menu.optnum - 1) * (ICON48W + ICONSPACE) - ICON48W / 2)
             menuOffsetX_Target = -(menu.optnum - 1) * (ICON48W + ICONSPACE);
-        //子菜单边缘
+        // if子菜单边缘
         if (optionOffset > 0)optionOffset = 0;
         if (optionOffset < -(menu.opt[MENUCHOICE].listnum-4) * 16)
             optionOffset = -(menu.opt[MENUCHOICE].listnum-4) * 16;
@@ -122,7 +121,7 @@ void TIM3_IRQHandler(void)
                     EaseOut(&menu.opt[i].ele.x, -ICON48W / 2, 12);
                 if (i > MENUCHOICE)
                     EaseOut(&menu.opt[i].ele.x, OLED_WIDTH, 12);
-                EaseOut(&menu.opt[i].ele.y, 8, 20); //主菜单动画偏移y
+                EaseOut(&menu.opt[i].ele.y, 8, 20); 
             }
             else {
                 EaseOut(&menu.opt[i].ele.x, menuOffsetX + MENULEFTEND + (ICON48W + ICONSPACE) * i, 10);
