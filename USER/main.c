@@ -18,12 +18,12 @@ int main() {
     Menu_Init();
 
     while (1)
-	{
+    {
 
         memset(FrameBuffer, 0, 1024);
 
-        
-        #ifdef DEBUG
+
+#ifdef DEBUG
         int16_t gx = GlobalX;
         if (gx < 0) {
             gx = -gx;
@@ -33,7 +33,7 @@ int main() {
         OLED_Show_Num(0, 2, keydown, 1, FrameBuffer, 1);
         OLED_Show_Num(0, 4, (u16)(yt * 1000), 4, FrameBuffer, 1);
         OLED_Show_Num(0, 6, (u16)(xt * 1000), 4, FrameBuffer, 1);
-        #endif
+#endif
 
         for (u8 i = 0;i < menu.optnum;i++)
         {

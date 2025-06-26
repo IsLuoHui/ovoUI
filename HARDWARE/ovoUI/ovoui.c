@@ -20,33 +20,33 @@ LIST list1[] = {
 OPTION mainMenu[] = {
     {
         {0,0,"Port",OLED_MIX_HIDE,0,0},
-        {0, 0, 0, 0, OLED_MIX_HIDE,(u8 *)ICON_48X48[0]},
+        {0, 0, 0, 0, OLED_MIX_HIDE,(u8*)ICON_48X48[0]},
         list1,
         sizeof(list1) / sizeof(list1[0])
     },
     {
         {0,0,"Model",OLED_MIX_HIDE,0,0},
-        {0, 0, 0, 0, OLED_MIX_HIDE,(u8 *)ICON_48X48[1]},
+        {0, 0, 0, 0, OLED_MIX_HIDE,(u8*)ICON_48X48[1]},
         list1,
         sizeof(list1) / sizeof(list1[0])
     },
     {
         {0,0,"Setting",OLED_MIX_HIDE,0,0},
-        {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[2]},
+        {0, 0, 0, 0, OLED_MIX_HIDE, (u8*)ICON_48X48[2]},
         list1,
         sizeof(list1) / sizeof(list1[0])
     },
     {
         {0,0,"Info",OLED_MIX_HIDE,0,0},
-        {0, 0, 0, 0, OLED_MIX_HIDE, (u8 *)ICON_48X48[3]},
+        {0, 0, 0, 0, OLED_MIX_HIDE, (u8*)ICON_48X48[3]},
         list1,
         sizeof(list1) / sizeof(list1[0])
     },
 };
 
-MENU menu = {mainMenu,sizeof(mainMenu) / sizeof(mainMenu[0]),MENULEFTEND};
+MENU menu = { mainMenu,sizeof(mainMenu) / sizeof(mainMenu[0]),MENULEFTEND };
 
-WINDOW cursor = {40, 0, 40 + ICON48W, ICON48H};
+WINDOW cursor = { 40, 0, 40 + ICON48W, ICON48H };
 
 int16_t menuOffsetX = 0, menuOffsetX_Target = 0;
 int16_t optionOffset = 0;
@@ -72,7 +72,7 @@ void Menu_Init(void) {
         menu.opt[i].ele.mix = OLED_MIX_XOR;
         for (u8 j = 0;j < menu.opt[i].listnum;j++) {
             TEXT_Preprocess(&menu.opt[i].list[j].text);
-            menu.opt[i].list[j].text.x = ICON48W/2+8;
+            menu.opt[i].list[j].text.x = ICON48W / 2 + 8;
             menu.opt[i].list[j].text.y = OLED_HEIGHT_PIXEL;
             menu.opt[i].list[j].text.mix = OLED_MIX_OR;
         }

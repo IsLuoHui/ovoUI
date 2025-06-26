@@ -1,34 +1,34 @@
 #include "ec11.h"
 
-u8 Ec11State=0x00;
+u8 Ec11State = 0x00;
 
 static u8 EC11_AL;
 
 void EC11_Init(void) {
     RCC->APB2ENR |= EC11_A_PIN_RCC | EC11_B_PIN_RCC | EC11_K_PIN_RCC;
-//EC11_A
+    //EC11_A
 #if EC11_A_PIN_ID < 8
     EC11_A_GPIO->CRL &= ~((u32)0xF << (4 * EC11_A_PIN_ID));  // 清零4位
-    EC11_A_GPIO->CRL |=  ((u32)0x8 << (4 * EC11_A_PIN_ID));  // CNF=10, MODE=00
+    EC11_A_GPIO->CRL |= ((u32)0x8 << (4 * EC11_A_PIN_ID));  // CNF=10, MODE=00
 #else 
     EC11_A_GPIO->CRH &= ~((u32)0xF << (4 * (EC11_A_PIN_ID - 8)));
-    EC11_A_GPIO->CRH |=  ((u32)0x8 << (4 * (EC11_A_PIN_ID - 8)));
+    EC11_A_GPIO->CRH |= ((u32)0x8 << (4 * (EC11_A_PIN_ID - 8)));
 #endif
-//EC11_B
+    //EC11_B
 #if EC11_B_PIN_ID < 8
     EC11_B_GPIO->CRL &= ~((u32)0xF << (4 * EC11_B_PIN_ID));  // 清零4位
-    EC11_B_GPIO->CRL |=  ((u32)0x8 << (4 * EC11_B_PIN_ID));  // CNF=10, MODE=00
+    EC11_B_GPIO->CRL |= ((u32)0x8 << (4 * EC11_B_PIN_ID));  // CNF=10, MODE=00
 #else 
     EC11_B_GPIO->CRH &= ~((u32)0xF << (4 * (EC11_B_PIN_ID - 8)));
-    EC11_B_GPIO->CRH |=  ((u32)0x8 << (4 * (EC11_B_PIN_ID - 8)));
+    EC11_B_GPIO->CRH |= ((u32)0x8 << (4 * (EC11_B_PIN_ID - 8)));
 #endif
-//EC11_K
+    //EC11_K
 #if EC11_K_PIN_ID < 8
     EC11_K_GPIO->CRL &= ~((u32)0xF << (4 * EC11_K_PIN_ID));  // 清零4位
-    EC11_K_GPIO->CRL |=  ((u32)0x8 << (4 * EC11_K_PIN_ID));  // CNF=10, MODE=00
+    EC11_K_GPIO->CRL |= ((u32)0x8 << (4 * EC11_K_PIN_ID));  // CNF=10, MODE=00
 #else 
     EC11_K_GPIO->CRH &= ~((u32)0xF << (4 * (EC11_K_PIN_ID - 8)));
-    EC11_K_GPIO->CRH |=  ((u32)0x8 << (4 * (EC11_K_PIN_ID - 8)));
+    EC11_K_GPIO->CRH |= ((u32)0x8 << (4 * (EC11_K_PIN_ID - 8)));
 #endif
 
     EC11_A_GPIO->BSRR = (1 << EC11_A_PIN_ID);
@@ -40,25 +40,25 @@ void EC11_Init(void) {
     TIM_TimeBaseStructure.TIM_Period = 999;//arr 自动重装载
     TIM_TimeBaseStructure.TIM_Prescaler = 71;//psc 预分频
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
-	TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE );
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure);
+    TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);
 
     EC11_AL = EC11_A;   //避免初始化后触发一次
 
     NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;//抢占优先级1
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1; // 子优先级3
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-    
+
     TIM_Cmd(TIM4, ENABLE);
 }
 
 
 u8 EC11_Scan(void) {
-    
+
     static u8 ScanResult;
     static u16 DLTime;
 
@@ -89,10 +89,10 @@ u8 EC11_Scan(void) {
 }
 
 void TIM4_IRQHandler(void)
-{ 	
-	if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//更新中断
+{
+    if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)//更新中断
     {
         Ec11State |= EC11_Scan();
         TIM_ClearITPendingBit(TIM4, TIM_IT_Update);  //清除TIM4更新中断标志    
-	}
+    }
 }
