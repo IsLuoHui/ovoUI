@@ -10,3 +10,5 @@
 # eide template
 *.ept
 *.eide-template
+
+.img/
